@@ -1,0 +1,146 @@
+@import "tailwindcss";
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+/*td,
+th {
+    border: 1px solid gray;
+    padding: 0.5rem 1rem;
+}
+
+table {
+    margin: 0;
+}*/
+
+/*:root {
+    --header-height: 40px;
+}
+
+caption {
+    text-align: left;
+    font-style: italic;
+    padding: 0.25em 0.5em 0.5em 0.5em;
+}
+
+th,
+td {
+    border: 1px solid gray;
+    padding: 0.25em 0.5em 0.25em 1em;
+    vertical-align: text-top;
+    text-align: left;
+    text-indent: -0.5em;
+}
+
+th {
+    vertical-align: bottom;
+    font-weight: bold;
+}
+
+td::before {
+    display: none;
+}
+
+tr:nth-child(even) {
+    background-color: rgba(0, 0, 255, 0.25);
+}
+
+tr:nth-child(odd) {
+    background-color: rgba(255, 255, 0, 0.5);
+}
+
+td:nth-of-type(2) {
+    font-style: italic;
+}
+
+th:nth-of-type(3),
+td:nth-of-type(3) {
+    text-align: right;
+}*/
+
+caption {
+    text-align: left;
+    font-style: italic;
+    padding: 0.25em 0.5em 0.5em 0.5em;
+}
+
+.table-container {
+    border: 1px solid darkgray;
+    cursor: pointer;
+}
+
+.table-container table td {
+    vertical-align: middle !important;
+}
+
+table {
+    table-layout: auto;
+    border-collapse: collapse;
+    font-family: "Source Code Pro", monospace;
+    width: 100%;
+}
+
+thead tr {
+    font-weight: bold;
+    font-size: 1.125rem; /* 18px */
+    line-height: 1.75rem; /* 28px */
+    /*position: sticky;*/
+    /*top: 0;*/
+    background-color: amber;
+    /*z-index: 10;*/
+    /*border-bottom: 1px solid #e5e7eb;*/
+}
+
+thead tr th:first-child {
+    /*position: sticky;*/
+    /*left: 0;*/
+    /*background-color: ghostwhite;*/
+    /*z-index: 11;*/
+    /*filter: drop-shadow(1px 0 0 #e5e7eb);*/
+}
+
+thead tr th {
+    /* padding: 8px 1.25rem;  10px 20px */
+    padding: 0 1rem;
+    /*border-right-width: 1px;*/
+    white-space: nowrap;
+    /*border-right: 1px solid #e5e7eb;*/
+}
+
+thead tr th:last-child {
+    border-right: none;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #fffef3;
+}
+
+tbody tr td {
+    padding: 8px 10px;
+    border-right: 1px solid #e5e7eb;
+    border-top: 1px solid #e5e7eb;
+    white-space: nowrap;
+}
+
+tbody tr td:first-child {
+    /*position: sticky;*/
+    /*left: 0;*/
+    /*background-color: ghostwhite;*/
+    /*z-index: 5;*/
+    /*filter: drop-shadow(1px 0 0 #e5e7eb);*/
+    text-align: center;
+    font-weight: bold;
+}
+
+tbody tr:hover {
+    background-color: #f1f5f9 !important;
+}
+
+tbody tr td:hover {
+    background-color: darkgreen;
+    color: white;
+    border-color: darkgreen;
+}
+
+tbody tr td:last-child {
+    border-right: none;
+}
