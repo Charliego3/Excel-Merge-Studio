@@ -149,7 +149,7 @@ func (r *Reader) read(id, file string) map[string]any {
 		sheets = append(sheets, r.sheet)
 	}
 
-	utility.State().AddWorkbook(r.workbook)
+	(&Workbook{}).AddWorkbook(r.workbook)
 	utility.State().App.Event.Emit("workbooks:updated")
 	return map[string]any{
 		"file":   file,
@@ -246,7 +246,8 @@ func (r *Reader) ShowFilePicker() map[string]any {
 
 	id := utility.Sha256Hash(path)
 	ch := make(chan bool, 1)
-	if utility.State().ContainsWorkbook(id) {
+	wk := &Workbook{}
+	if wk.ContainsWorkbook(id) {
 		dialog := utility.State().App.Dialog.Question().
 			SetTitle("该文件已经存在，是否要覆盖?").
 			AttachToWindow(utility.State().MainWindow).
@@ -270,7 +271,7 @@ func (r *Reader) ShowFilePicker() map[string]any {
 	if !<-ch {
 		return map[string]any{
 			"file":   path,
-			"sheets": utility.State().Sheets(id),
+			"sheets": wk.Sheets(id),
 		}
 	}
 	fmt.Println(path)

@@ -9,8 +9,24 @@ import { Call as $Call, CancellablePromise as $CancellablePromise } from "@wails
 // @ts-ignore: Unused imports
 import * as utility$0 from "../utility/models.js";
 
+export function AddWorkbook(workbook: utility$0.Workbook | null): $CancellablePromise<void> {
+    return $Call.ByID(1283732231, workbook);
+}
+
+export function AllWorkbooks(): $CancellablePromise<(utility$0.Workbook | null)[] | null> {
+    return $Call.ByID(3454754428);
+}
+
+export function ContainsWorkbook(id: string): $CancellablePromise<boolean> {
+    return $Call.ByID(316202949, id);
+}
+
 export function GetWorkbook(id: string): $CancellablePromise<utility$0.WorkbookInfo> {
     return $Call.ByID(338056824, id);
+}
+
+export function Sheets(id: string): $CancellablePromise<(utility$0.Sheet | null)[] | null> {
+    return $Call.ByID(2179441316, id);
 }
 
 export function Workbooks(): $CancellablePromise<(utility$0.Workbook | null)[] | null> {

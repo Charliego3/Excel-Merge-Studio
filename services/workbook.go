@@ -28,7 +28,7 @@ func (w *Workbook) GetWorkbook(id string) utility.WorkbookInfo {
 
 func (w *Workbook) Workbooks() []*utility.Workbook {
 	fmt.Println(len(utility.State().Workbooks))
-	return utility.State().AllWorkbooks()
+	return w.AllWorkbooks()
 }
 
 func (w *Workbook) WorkbooksMeta() []utility.WorkbookMeta {
@@ -42,4 +42,45 @@ func (w *Workbook) WorkbooksMeta() []utility.WorkbookMeta {
 		})
 	}
 	return metas
+}
+
+func (w *Workbook) Sheets(id string) []*utility.Sheet {
+	if !w.ContainsWorkbook(id) {
+		return nil
+	}
+	wk := utility.State().Workbooks[id]
+	if wk == nil {
+		return nil
+	}
+
+	var sheets []*utility.Sheet
+	for _, sheetName := range wk.SheetNames {
+		sheets = append(sheets, wk.Sheets[sheetName])
+	}
+	return sheets
+}
+
+func (w *Workbook) AddWorkbook(workbook *utility.Workbook) {
+	utility.State().Workbooks[workbook.ID] = workbook
+	if w.ContainsWorkbook(workbook.ID) {
+		return
+	}
+	utility.State().WorkbookIds = append(utility.State().WorkbookIds, workbook.ID)
+}
+
+func (w *Workbook) ContainsWorkbook(id string) bool {
+	for _, workbookId := range utility.State().WorkbookIds {
+		if workbookId == id {
+			return true
+		}
+	}
+	return false
+}
+
+func (w *Workbook) AllWorkbooks() []*utility.Workbook {
+	var workbooks []*utility.Workbook
+	for _, id := range utility.State().WorkbookIds {
+		workbooks = append(workbooks, utility.State().Workbooks[id])
+	}
+	return workbooks
 }

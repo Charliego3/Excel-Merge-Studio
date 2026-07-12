@@ -24,7 +24,7 @@
         <div class="flex flex-col items-start gap-1 text-left">
             <span
                 title={book?.FilePath}
-                class={`font-medium text-[11px] ${state.work_index != index ? "text-gray-500" : ""}`}
+                class={`font-medium text-[10px] ${state.work_index != index ? "text-gray-500" : ""}`}
                 >{book?.Name}</span
             >
             <span title={book?.SheetNames?.join("\n")} class="line-clamp-2 text-gray-500 text-[8px]">
