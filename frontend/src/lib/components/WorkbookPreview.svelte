@@ -11,7 +11,7 @@
         onRowSelected,
         onColSelected,
     }: {
-        sheets: Sheet[],
+        sheets: (Sheet | null)[] | null,
         headerHeight: number;
         checked?: boolean
         onRowSelected?: (row: number) => void;
@@ -20,28 +20,32 @@
 </script>
 
 <div class="flex-1 h-full overflow-hidden">
-    <Tabs.Root class="h-full" value={sheets[0]?.ID}>
-        {#if sheets.length > 1}
+    <Tabs.Root class="h-full" value={sheets?.[0]?.Name}>
+        {#if sheets && sheets?.length > 1}
             <ScrollArea orientation="horizontal" class="pt-1 px-1" scrollbarXClasses="hidden">
                 <Tabs.List>
                     {#each sheets as sheet}
-                        <Tabs.Trigger class="text-[10px]" value={sheet.ID}>
-                            {sheet.Name}
-                        </Tabs.Trigger>
+                        {#if sheet}
+                            <Tabs.Trigger class="text-[10px]" value={sheet.Name}>
+                                {sheet.Name}
+                            </Tabs.Trigger>
+                        {/if}
                     {/each}
                 </Tabs.List>
             </ScrollArea>
         {/if}
         {#each sheets as sheet}
-            <Tabs.Content class={`h-full ${sheets.length > 1 ? "-mt-1" : ""}`} value={sheet.ID}>
-                <SheetPreview
-                    {checked}
-                    {onColSelected}
-                    {onRowSelected}
-                    border={sheets.length > 1}
-                    style={`height: calc(100vh ${sheets.length > 1 ? "- 44px" : "+ 4px"} - ${headerHeight}px)`}
-                    sheet={sheet} />
-            </Tabs.Content>
+            {#if sheets && sheet}
+                <Tabs.Content class={`h-full ${sheets?.length > 1 ? "-mt-1" : ""}`} value={sheet.Name}>
+                    <SheetPreview
+                        {checked}
+                        {onColSelected}
+                        {onRowSelected}
+                        border={sheets?.length > 1}
+                        style={`height: calc(100vh ${sheets?.length > 1 ? "- 44px" : "+ 1px"} - ${headerHeight}px)`}
+                        sheet={sheet} />
+                </Tabs.Content>
+            {/if}
         {/each}
     </Tabs.Root>
 </div>

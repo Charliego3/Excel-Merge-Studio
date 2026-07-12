@@ -53,12 +53,7 @@ func (r *Reader) read(id, file string) map[string]any {
 
 	var sheets []*utility.Sheet
 	for _, sheetName := range r.workbook.SheetNames {
-		id := utility.Sha256Hash(sheetName)
-		r.sheet = &utility.Sheet{
-			ID:   id,
-			Name: sheetName,
-		}
-
+		r.sheet = &utility.Sheet{Name: sheetName}
 		rows, err := r.file.Rows(sheetName)
 		if err != nil {
 			return nil
@@ -150,11 +145,12 @@ func (r *Reader) read(id, file string) map[string]any {
 		if err != nil {
 			return nil
 		}
-		r.workbook.Sheets[id] = r.sheet
+		r.workbook.Sheets[sheetName] = r.sheet
 		sheets = append(sheets, r.sheet)
 	}
 
 	utility.State().AddWorkbook(r.workbook)
+	utility.State().App.Event.Emit("workbooks:updated")
 	return map[string]any{
 		"file":   file,
 		"sheets": sheets,
@@ -272,7 +268,10 @@ func (r *Reader) ShowFilePicker() map[string]any {
 	}
 
 	if !<-ch {
-		return nil
+		return map[string]any{
+			"file":   path,
+			"sheets": utility.State().Sheets(id),
+		}
 	}
 	fmt.Println(path)
 	return r.read(id, path)

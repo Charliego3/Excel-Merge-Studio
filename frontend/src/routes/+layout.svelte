@@ -6,8 +6,8 @@
     import { setStateContext, sidebarWidthKey, type State } from "$lib/state";
     import { Window, Events } from "@wailsio/runtime";
     import { onMount, setContext } from "svelte";
-    import { Workbooks } from "../../bindings/merger/services/workbook";
-    import type { Workbook } from "../../bindings/merger/utility";
+    import { WorkbooksMeta } from "../../bindings/merger/services/workbook";
+    import type { WorkbookMeta } from "../../bindings/merger/utility";
 
     let fullscreen: boolean = $state(false);
     Events.On("common:WindowFullscreen", () => (fullscreen = true));
@@ -18,18 +18,22 @@
     let { data, children }: { data: Flow; children: any } = $props();
 
     let flow = $state((() => data)());
-    let workbooks: (Workbook | null)[] | null = $state([]);
+    let workbooks: (WorkbookMeta | null)[] | null = $state([]);
     let sidebarWidth = $state(0);
     setContext(sidebarWidthKey, () => sidebarWidth);
 
     let windowWidth: number = $state(window.innerWidth);
+
+    Events.On("workbooks:updated", async () => {
+        workbooks = await WorkbooksMeta();
+    });
 
     onMount(async () => {
         window.addEventListener("resize", async () => {
             windowWidth = (await Window.Size()).width;
         });
         fullscreen = await Window.IsFullscreen();
-        workbooks = await Workbooks();
+        workbooks = await WorkbooksMeta();
     });
 </script>
 

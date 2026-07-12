@@ -16,3 +16,7 @@ export function GetWorkbook(id: string): $CancellablePromise<utility$0.WorkbookI
 export function Workbooks(): $CancellablePromise<(utility$0.Workbook | null)[] | null> {
     return $Call.ByID(2674749277);
 }
+
+export function WorkbooksMeta(): $CancellablePromise<utility$0.WorkbookMeta[] | null> {
+    return $Call.ByID(1501499648);
+}

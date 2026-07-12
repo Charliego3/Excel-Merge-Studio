@@ -12,6 +12,22 @@ type AppState struct {
 	Workbooks   map[string]*Workbook
 }
 
+func (s *AppState) Sheets(id string) []*Sheet {
+	if !s.ContainsWorkbook(id) {
+		return nil
+	}
+	wk := s.Workbooks[id]
+	if wk == nil {
+		return nil
+	}
+
+	var sheets []*Sheet
+	for _, sheetName := range wk.SheetNames {
+		sheets = append(sheets, wk.Sheets[sheetName])
+	}
+	return sheets
+}
+
 func (s *AppState) AddWorkbook(workbook *Workbook) {
 	s.Workbooks[workbook.ID] = workbook
 	if s.ContainsWorkbook(workbook.ID) {
@@ -43,6 +59,13 @@ type WorkbookInfo struct {
 	Sheets   []*Sheet
 }
 
+type WorkbookMeta struct {
+	ID         string
+	FilePath   string
+	Name       string
+	SheetNames []string
+}
+
 type Workbook struct {
 	ID         string
 	FilePath   string
@@ -52,7 +75,6 @@ type Workbook struct {
 }
 
 type Sheet struct {
-	ID      string
 	Name    string
 	Columns int
 	Rows    int

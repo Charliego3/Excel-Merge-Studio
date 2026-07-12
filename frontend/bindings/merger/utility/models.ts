@@ -14,7 +14,6 @@ export interface Cell {
 }
 
 export interface Sheet {
-    "ID": string;
     "Name": string;
     "Columns": number;
     "Rows": number;
@@ -32,5 +31,12 @@ export interface Workbook {
 export interface WorkbookInfo {
     "FilePath": string;
     "Name": string;
-    "Sheets": Sheet[];
+    "Sheets": (Sheet | null)[] | null;
+}
+
+export interface WorkbookMeta {
+    "ID": string;
+    "FilePath": string;
+    "Name": string;
+    "SheetNames": string[] | null;
 }
