@@ -15,7 +15,7 @@ export const load: PageLoad = async () => {
             {
                 name: "文件",
                 path: "/",
-                description: "3 个工作簿",
+                description: "工作薄、Sheet 和列",
                 icon: FileSpreadsheet,
                 iconColor: "oklch(82.8% 0.189 84.429)",
                 iconBgColor: "oklch(96.2% 0.059 95.617)",

@@ -6,6 +6,7 @@ export type State = {
 };
 
 let key = Symbol("state");
+export const sidebarWidthKey = Symbol("sidebarWidth");
 
 export function setStateContext(state: State): void {
     setContext(key, state);

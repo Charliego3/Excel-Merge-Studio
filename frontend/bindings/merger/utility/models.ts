@@ -28,3 +28,9 @@ export interface Workbook {
     "SheetNames": string[] | null;
     "Sheets": { [_ in string]?: Sheet | null } | null;
 }
+
+export interface WorkbookInfo {
+    "FilePath": string;
+    "Name": string;
+    "Sheets": Sheet[];
+}

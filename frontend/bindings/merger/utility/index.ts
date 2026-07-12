@@ -4,5 +4,6 @@
 export type {
     Cell,
     Sheet,
-    Workbook
+    Workbook,
+    WorkbookInfo
 } from "./models.js";

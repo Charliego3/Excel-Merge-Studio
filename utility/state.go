@@ -37,6 +37,12 @@ func (s *AppState) AllWorkbooks() []*Workbook {
 	return workbooks
 }
 
+type WorkbookInfo struct {
+	FilePath string
+	Name     string
+	Sheets   []*Sheet
+}
+
 type Workbook struct {
 	ID         string
 	FilePath   string

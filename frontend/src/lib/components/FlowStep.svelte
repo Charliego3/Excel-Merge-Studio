@@ -26,7 +26,7 @@
                 class={`font-semibold text-sm ${state.main_index != index ? "text-gray-500" : ""}`}
                 >{step.name}</span
             >
-            <span class="text-gray-400 text-[12px]">{step.description}</span>
+            <span class="text-gray-400 text-[10px]">{step.description}</span>
         </div>
     </div>
     {#if state.main_index == index}

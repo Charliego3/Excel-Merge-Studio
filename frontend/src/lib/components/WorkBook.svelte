@@ -13,15 +13,15 @@
     onclick={() => {
         state.work_index = index;
         state.main_index = -1;
-        goto("/");
+        goto(`/preview?id=${book?.ID}`);
     }}
-    class={`group flex border rounded-lg max-w-80 hover:cursor-pointer p-2 items-center gap-2 justify-between ${state.work_index == index ? "border-[#98cdbc] bg-green-50" : "border-gray-300"}`}
+    class={`group flex border rounded-lg w-60 hover:cursor-pointer p-2 items-center gap-2 justify-between ${state.work_index == index ? "border-[#98cdbc] bg-green-50" : "border-gray-300"}`}
 >
     <div class="flex gap-2 items-center">
         <div class="self-center bg-emerald-100 p-2 rounded-lg">
             <Sheet size={18} color="#127A65" />
         </div>
-        <div class="flex flex-col items-start gap-1">
+        <div class="flex flex-col items-start gap-1 text-left">
             <span
                 title={book?.FilePath}
                 class={`font-medium text-[11px] ${state.work_index != index ? "text-gray-500" : ""}`}

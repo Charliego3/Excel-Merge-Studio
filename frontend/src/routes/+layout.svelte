@@ -1,11 +1,11 @@
 <script lang="ts">
     import "../layout.css";
     import type { Flow } from "$lib/types";
-    import WorkBook from "$lib/componments/WorkBook.svelte";
-    import FlowStep from "$lib/componments/FlowStep.svelte";
-    import { setStateContext, type State } from "$lib/state";
+    import WorkBook from "$lib/components/WorkBook.svelte";
+    import FlowStep from "$lib/components/FlowStep.svelte";
+    import { setStateContext, sidebarWidthKey, type State } from "$lib/state";
     import { Window, Events } from "@wailsio/runtime";
-    import { onMount } from "svelte";
+    import { onMount, setContext } from "svelte";
     import { Workbooks } from "../../bindings/merger/services/workbook";
     import type { Workbook } from "../../bindings/merger/utility";
 
@@ -16,18 +16,26 @@
     setStateContext(appState);
     let isMac = navigator.userAgent.includes("Mac");
     let { data, children }: { data: Flow; children: any } = $props();
+
     let flow = $state((() => data)());
     let workbooks: (Workbook | null)[] | null = $state([]);
+    let sidebarWidth = $state(0);
+    setContext(sidebarWidthKey, () => sidebarWidth);
+
+    let windowWidth: number = $state(window.innerWidth);
 
     onMount(async () => {
+        window.addEventListener("resize", async () => {
+            windowWidth = (await Window.Size()).width;
+        });
         fullscreen = await Window.IsFullscreen();
         workbooks = await Workbooks();
     });
 </script>
 
 <div class="flex w-full h-full">
-    <div
-        class={`border-r select-none flex-none border-r-gray-300 min-w-60 flex flex-col bg-[#FBFBFA]`}
+    <div bind:clientWidth={sidebarWidth}
+        class={`border-r select-none flex-none border-r-gray-300 w-64 flex flex-col bg-[#FBFBFA]`}
     >
         {#if isMac && !fullscreen}
             <div class="flex-none h-10"></div>
@@ -45,11 +53,11 @@
                 <span class="text-[11px]">({workbooks.length})</span>
             {/if}
         </div>
-        {#if workbooks && workbooks.length === 0}
+        {#if workbooks === null || workbooks?.length === 0}
             <div
                 class={`h-full border border-gray-300 m-2 flex items-center justify-center ${isMac ? "rounded-2xl" : "rounded-lg"}`}
             >
-                <span>请选择文件d223</span>
+                <span>No Data</span>
             </div>
         {:else}
             <div class="overflow-y-auto px-2 pb-2 flex flex-col gap-2 mt-1">
@@ -60,7 +68,7 @@
         {/if}
     </div>
 
-    <div class="w-full h-full bg-white">
+    <div class="w-full h-full bg-white" style={`width: ${windowWidth - sidebarWidth}px;`}>
         {@render children()}
     </div>
 </div>

@@ -2,85 +2,70 @@
     import { Plus } from "@lucide/svelte";
     import { ShowFilePicker } from "../../bindings/merger/services/reader";
     import { type Sheet, type Workbook } from "../../bindings/merger/utility";
-    import { index2column } from "$lib/index";
+    import * as Tabs from "$lib/components/ui/tabs/index.js";
+    import ScrollArea from "$lib/components/ui/scroll-area/scroll-area.svelte";
+    import * as Empty from "$lib/components/ui/empty/index.js";
+    import { Button } from "$lib/components/ui/button/index.js";
+    import { Sheet as SheetIcon } from "@lucide/svelte";
+    import SheetPreview from "$lib/components/SheetPreview.svelte";
+    import WorkbookPreview from "$lib/components/WorkbookPreview.svelte";
+    import * as Kbd from "$lib/components/ui/kbd/index.js";
 
-    let file: string = $state("");
+    let file: string = $state("选择工作簿、Sheet 和列");
     let sheets: Sheet[] = $state([]);
+    let headerHeight: number = $state(0);
 
     function onWorkbookLoaded() {
-        ShowFilePicker().then((data: any) => {
-            file = data.file;
-            sheets = data.sheets;
-        }).catch(e => console.log(e));
+        ShowFilePicker()
+            .then((data: any) => {
+                file = data.file;
+                sheets = data.sheets;
+            })
+            .catch((e) => console.log(e));
     }
 </script>
 
 <div class="w-full h-full flex flex-col">
     <div
+        bind:clientHeight={headerHeight}
         class="flex-none flex justify-between items-center border-b border-b-gray-300 select-none w-full"
     >
         <div class="flex flex-col py-2 px-4 gap-1 w-full">
-            <span class="font-bold">文件与主表</span>
-            <span class="text-[11px] text-gray-500">选择工作簿、Sheet 和列</span
-            >
+            <span class="font-bold">文件与工作簿</span>
+            <span class="text-[11px] text-gray-500">{file}</span>
         </div>
-        <button
-            onclick={onWorkbookLoaded}
-            class="p-2 cursor-pointer border border-gray-300 rounded-xl mr-4"
-        >
-            <Plus size={18} />
-        </button>
+        {#if sheets.length > 0}
+            <button
+                title="选择其他文件"
+                onclick={onWorkbookLoaded}
+                class="p-2 cursor-pointer border border-gray-300 rounded-xl mr-4"
+            >
+                <Plus size={18} />
+            </button>
+        {/if}
     </div>
-    {#each sheets as sheet}
-        <div class="flex-1 p-2 w-full h-full overflow-hidden">
-            <div
-                class="table-container overflow-auto w-full h-full rounded text-[10px]"
-            >
-                <table class="table-fixed w-full">
-                    <caption
-                        class="sticky top-0 h-5 bg-black text-white"
-                        >{file} -- {sheet?.Name}</caption
-                    >
-                    <thead class="sticky top-5 h-5 bg-amber-800">
-                        <tr class="text-white">
-                            {#each Array(sheet?.Columns ?? 0) as _, index}
-                                <th>
-                                    <div
-                                        class="flex items-center justify-center"
-                                    >
-                                        {index2column(index)}
-                                    </div>
-                                </th>
-                            {/each}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {#each sheet?.Data as row}
-                            <tr>
-                                {#each row as cell}
-                                    {#if !cell.Skip}
-                                        <td
-                                            colspan={cell.IsMerged
-                                                ? cell.ColSpan
-                                                : 1}
-                                            rowspan={cell.IsMerged
-                                                ? cell.RowSpan
-                                                : 1}
-                                        >
-                                            <div
-                                                class={`${cell.IsMerged ? "flex items-center justify-center" : ""}`}
-                                            >
-                                                <span>{cell.Value}</span
-                                                >
-                                            </div>
-                                        </td>
-                                    {/if}
-                                {/each}
-                            </tr>
-                        {/each}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    {/each}
+    {#if sheets.length > 0}
+        <WorkbookPreview {sheets} headerHeight={headerHeight} />
+    {:else}
+        <Empty.Root>
+            <Empty.Header>
+                <Empty.Media variant="icon">
+                    <SheetIcon size={30} color="#127A65" />
+                </Empty.Media>
+                <Empty.Title>未选择任何文件</Empty.Title>
+                <Empty.Description class="text-[12px]/6">
+                    请选择一个表格文件进行打开和查看。支持的文件格式：
+                    <Kbd.Group>
+                        <Kbd.Root>.xlsx</Kbd.Root>
+                        <Kbd.Root>.xls</Kbd.Root>
+                        和
+                        <Kbd.Root>.csv</Kbd.Root>
+                    </Kbd.Group>
+                </Empty.Description>
+            </Empty.Header>
+            <Empty.Content>
+                <Button onclick={onWorkbookLoaded}>选择文件</Button>
+            </Empty.Content>
+        </Empty.Root>
+    {/if}
 </div>

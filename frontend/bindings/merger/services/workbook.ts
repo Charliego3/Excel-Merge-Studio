@@ -9,7 +9,7 @@ import { Call as $Call, CancellablePromise as $CancellablePromise } from "@wails
 // @ts-ignore: Unused imports
 import * as utility$0 from "../utility/models.js";
 
-export function GetWorkbook(id: string): $CancellablePromise<utility$0.Workbook | null> {
+export function GetWorkbook(id: string): $CancellablePromise<utility$0.WorkbookInfo> {
     return $Call.ByID(338056824, id);
 }
 
