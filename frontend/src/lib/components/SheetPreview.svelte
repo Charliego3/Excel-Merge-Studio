@@ -37,7 +37,7 @@
                                 {#if checked}
                                     <Checkbox id={`col-${index}`} onCheckedChange={onColSelected ? () => onColSelected(index) : undefined} />
                                 {/if}
-                                <Label for={`col-${index}`}>{index2column(index)}</Label>
+                                <Label for={`col-${index}`} class="font-bold text-[12px]">{index2column(index)}</Label>
                             </div>
                         </th>
                     {/each}
