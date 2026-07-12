@@ -222,6 +222,7 @@ tbody tr td:first-child {
     text-align: center;
     font-weight: bold;
     color: darkviolet;
+    padding: 8px 5px;
 }
 
 tbody tr {

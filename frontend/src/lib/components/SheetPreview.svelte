@@ -3,17 +3,25 @@
     import type { Sheet } from "../../../bindings/merger/utility";
     import * as Empty from "$lib/components/ui/empty/index.js";
     import { Grid2x2X } from "@lucide/svelte";
+    import { Checkbox } from "$lib/components/ui/checkbox/index.js";
+    import { Label } from "./ui/label";
 
     let {
         classes = "overflow-auto text-[10px]",
         style = "",
         border = true,
-        sheet,
+        sheet = $bindable<Sheet | undefined | null>(null),
+        checked = false,
+        onRowSelected,
+        onColSelected,
     }: {
         classes?: string;
         style?: string;
         border?: boolean;
         sheet: Sheet | undefined | null;
+        checked?: boolean;
+        onRowSelected?: (row: number) => void;
+        onColSelected?: (col: number) => void;
     } = $props();
 </script>
 
@@ -24,17 +32,32 @@
                 <tr>
                     <th></th>
                     {#each Array(sheet?.Columns ?? 0) as _, index}
-                        <th>{index2column(index)}</th>
+                        <th>
+                            <div class="flex gap-2 items-center justify-center">
+                                {#if checked}
+                                    <Checkbox id={`col-${index}`} onCheckedChange={onColSelected ? () => onColSelected(index) : undefined} />
+                                {/if}
+                                <Label for={`col-${index}`}>{index2column(index)}</Label>
+                            </div>
+                        </th>
                     {/each}
                 </tr>
             </thead>
             <tbody>
                 {#each sheet?.Data as row, index}
                     <tr>
-                        <td>{index + 1}</td>
-                        {#each row as cell}
+                        <td>
+                            <div class="flex gap-2 items-center justify-center">
+                                {#if checked}
+                                    <Checkbox id={`row-${index}`} onCheckedChange={onRowSelected ? () => onRowSelected(index) : undefined} />
+                                {/if}
+                                <Label class="text-[11px] font-bold" for={`row-${index}`}>{index + 1}</Label>
+                            </div>
+                        </td>
+                        {#each row as cell, colIndex}
                             {#if !cell.Skip}
                                 <td
+                                    title={`${index2column(colIndex)}${index + 1}`}
                                     colspan={cell.IsMerged ? cell.ColSpan : 1}
                                     rowspan={cell.IsMerged ? cell.RowSpan : 1}
                                 >

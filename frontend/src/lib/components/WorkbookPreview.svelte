@@ -4,7 +4,19 @@
     import type { Sheet } from "../../../bindings/merger/utility";
     import SheetPreview from '$lib/components/SheetPreview.svelte';
 
-    let { sheets, headerHeight }: { sheets: Sheet[], headerHeight: number } = $props();
+    let {
+        sheets,
+        headerHeight,
+        checked = false,
+        onRowSelected,
+        onColSelected,
+    }: {
+        sheets: Sheet[],
+        headerHeight: number;
+        checked?: boolean
+        onRowSelected?: (row: number) => void;
+        onColSelected?: (col: number) => void;
+    } = $props();
 </script>
 
 <div class="flex-1 h-full overflow-hidden">
@@ -21,8 +33,11 @@
             </ScrollArea>
         {/if}
         {#each sheets as sheet}
-            <Tabs.Content class="h-full -mt-1" value={sheet.ID}>
+            <Tabs.Content class={`h-full ${sheets.length > 1 ? "-mt-1" : ""}`} value={sheet.ID}>
                 <SheetPreview
+                    {checked}
+                    {onColSelected}
+                    {onRowSelected}
                     border={sheets.length > 1}
                     style={`height: calc(100vh ${sheets.length > 1 ? "- 44px" : "+ 4px"} - ${headerHeight}px)`}
                     sheet={sheet} />

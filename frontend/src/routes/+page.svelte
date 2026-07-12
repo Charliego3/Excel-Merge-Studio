@@ -31,7 +31,12 @@
         class="flex-none flex justify-between items-center border-b border-b-gray-300 select-none w-full"
     >
         <div class="flex flex-col py-2 px-4 gap-1 w-full">
-            <span class="font-bold">文件与工作簿</span>
+            <span class="font-bold">
+                文件与工作簿
+                {#if sheets.length > 0}
+                    <span class="text-[11px] font-normal text-gray-500 ml-1">(选择表头，所需列)</span>
+                {/if}
+            </span>
             <span class="text-[11px] text-gray-500">{file}</span>
         </div>
         {#if sheets.length > 0}
@@ -45,7 +50,7 @@
         {/if}
     </div>
     {#if sheets.length > 0}
-        <WorkbookPreview {sheets} headerHeight={headerHeight} />
+        <WorkbookPreview checked {sheets} headerHeight={headerHeight} />
     {:else}
         <Empty.Root>
             <Empty.Header>
