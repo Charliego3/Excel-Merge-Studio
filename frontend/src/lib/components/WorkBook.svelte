@@ -4,6 +4,7 @@
     import { CircleX } from "@lucide/svelte";
     import { goto } from "$app/navigation";
     import type { WorkbookMeta } from "../../../bindings/merger/utility";
+    import { RemoveWorkbook, WorkbooksMeta } from "../../../bindings/merger/services/workbook";
 
     let { book, index }: { book: WorkbookMeta | null; index: number } = $props();
     let state = getStateContext();
@@ -35,9 +36,16 @@
     <a
         href={"#"}
         type="button"
-        onclick={(e) => {
+        onclick={async (e) => {
             e.preventDefault();
             e.stopPropagation();
+            RemoveWorkbook(book?.ID ?? "").then(async () => {
+                WorkbooksMeta().then((books) => {
+                    if (!books?.some(book => book.ID === book?.ID)) {
+                        goto("/", { invalidateAll: true });
+                    }
+                });
+            });
         }}
         class="invisible group-hover:visible text-gray-400 hover:text-red-700 cursor-pointer"
     >

@@ -7,6 +7,21 @@ import (
 
 type Workbook struct{}
 
+func (w *Workbook) RemoveWorkbook(id string) bool {
+	if _, ok := utility.State().Workbooks[id]; ok {
+		delete(utility.State().Workbooks, id)
+		for index, wkId := range utility.State().WorkbookIds {
+			if wkId == id {
+				utility.State().WorkbookIds = append(utility.State().WorkbookIds[:index], utility.State().WorkbookIds[index+1:]...)
+				break
+			}
+		}
+		utility.State().App.Event.Emit("workbooks:updated")
+		return true
+	}
+	return false
+}
+
 func (w *Workbook) GetWorkbook(id string) utility.WorkbookInfo {
 	if wk, ok := utility.State().Workbooks[id]; ok {
 		info := utility.WorkbookInfo{

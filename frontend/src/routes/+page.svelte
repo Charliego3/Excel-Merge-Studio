@@ -1,27 +1,30 @@
 <script lang="ts">
     import { Plus } from "@lucide/svelte";
     import { ShowFilePicker } from "../../bindings/merger/services/reader";
-    import { type Sheet, type Workbook } from "../../bindings/merger/utility";
-    import * as Tabs from "$lib/components/ui/tabs/index.js";
-    import ScrollArea from "$lib/components/ui/scroll-area/scroll-area.svelte";
+    import { type Sheet } from "../../bindings/merger/utility";
     import * as Empty from "$lib/components/ui/empty/index.js";
     import { Button } from "$lib/components/ui/button/index.js";
     import { Sheet as SheetIcon } from "@lucide/svelte";
-    import SheetPreview from "$lib/components/SheetPreview.svelte";
     import WorkbookPreview from "$lib/components/WorkbookPreview.svelte";
     import * as Kbd from "$lib/components/ui/kbd/index.js";
+    import type { PageProps } from './$types';
 
-    let file: string = $state("选择工作簿、Sheet 和列");
-    let sheets: Sheet[] = $state([]);
+    let { data }: PageProps = $props();
+    let file: string = $derived(data.file);
+    let sheets: Sheet[] = $derived(data.sheets);
     let headerHeight: number = $state(0);
 
+    let loading: boolean = $state(false);
+
     function onWorkbookLoaded() {
+        loading = true;
         ShowFilePicker()
             .then((data: any) => {
                 file = data.file;
                 sheets = data.sheets;
             })
-            .catch((e) => console.log(e));
+            .catch((e) => console.log(e))
+            .finally(() => loading = false);
     }
 </script>
 
@@ -49,6 +52,11 @@
             </button>
         {/if}
     </div>
+    {#if loading}
+        <div class="flex justify-center items-center">
+            Loading...
+        </div>
+    {/if}
     {#if sheets.length > 0}
         <WorkbookPreview checked {sheets} headerHeight={headerHeight} />
     {:else}
