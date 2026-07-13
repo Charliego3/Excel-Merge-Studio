@@ -23,6 +23,14 @@
         onRowSelected?: (row: number) => void;
         onColSelected?: (col: number) => void;
     } = $props();
+
+    function handleColCheckboxChange() {
+
+    }
+
+    function handleRowCheckboxChange() {
+
+    }
 </script>
 
 {#if sheet?.Columns ?? 0 > 0}
@@ -30,7 +38,12 @@
         <table class="table-fixed">
             <thead class="sticky top-0 h-5">
                 <tr>
-                    <th></th>
+                    <th class="relative">
+                        {#if checked}
+                            <Checkbox onCheckedChange={handleColCheckboxChange} class="w-3 h-3 absolute right-1 top-1" />
+                            <Checkbox onCheckedChange={handleRowCheckboxChange} class="w-3 h-3 absolute left-1 bottom-1" />
+                        {/if}
+                    </th>
                     {#each Array(sheet?.Columns ?? 0) as _, index}
                         <th>
                             <div class="flex gap-2 items-center justify-center">

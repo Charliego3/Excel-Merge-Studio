@@ -5,12 +5,14 @@
     import SheetPreview from '$lib/components/SheetPreview.svelte';
 
     let {
+        border = false,
         sheets,
         headerHeight,
         checked = false,
         onRowSelected,
         onColSelected,
     }: {
+        border?: boolean;
         sheets: (Sheet | null)[] | null,
         headerHeight: number;
         checked?: boolean
@@ -41,7 +43,7 @@
                         {checked}
                         {onColSelected}
                         {onRowSelected}
-                        border={sheets?.length > 1}
+                        border={border || sheets?.length > 1}
                         style={`height: calc(100vh ${sheets?.length > 1 ? "- 44px" : "+ 1px"} - ${headerHeight}px)`}
                         sheet={sheet} />
                 </Tabs.Content>

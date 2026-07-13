@@ -97,7 +97,6 @@ func (r *Reader) read(id, file string) []*utility.Sheet {
 			r.sheet.Data = append(r.sheet.Data, rowValues)
 		}
 
-		// fmt.Println("Sheet:", r.sheet.Name, ", Columns:", r.sheet.Columns)
 		for index, columns := range r.sheet.Data {
 			var columnCount int
 			for _, column := range columns {
@@ -107,25 +106,34 @@ func (r *Reader) read(id, file string) []*utility.Sheet {
 					columnCount++
 				}
 			}
+
 			if columnCount < r.sheet.Columns {
-				// fmt.Println("\n\n\n")
-				// fmt.Println("第", index+1, "行", ", 实际列数:", columnCount, ", 期望列数:", r.sheet.Columns)
-				// for j, cell := range columns {
-				// fmt.Printf("第 %d 行 第 %+d 列: %s\n", index+1, j+1, cell.Value)
-				// }
+			OUTER:
+				for i := 0; i < r.sheet.Columns; {
+					if columnCount >= r.sheet.Columns {
+						break OUTER
+					}
+					for j, merge := range r.merges {
+						_ = j
+						if merge.endedRow >= index &&
+							merge.startRow <= index &&
+							merge.endedCol >= i+1 &&
+							merge.startCol <= i+1 {
+							columnCount += merge.endedCol - merge.startCol + 1
+							i += merge.endedCol - merge.startCol
+							continue OUTER
+						}
+					}
+					i++
+				}
+			}
+
+			if columnCount < r.sheet.Columns {
 				for i := columnCount; i < r.sheet.Columns; i++ {
 					columns = append(columns, utility.Cell{})
 					columnCount++
 				}
 				r.sheet.Data[index] = columns
-				// fmt.Printf("%#v\n", columnCount)
-				// fmt.Println("\n\n\n")
-			} else {
-				// fmt.Println("\n\n\n========", "第", index+1, "行", ", 实际列数:", columnCount, ", 期望列数:", r.sheet.Columns)
-				// for _, cell := range columns {
-				// fmt.Printf("%+v\n", cell)
-				// }
-				// fmt.Println("========\n\n\n")
 			}
 		}
 

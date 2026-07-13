@@ -9,11 +9,13 @@
     import * as Kbd from "$lib/components/ui/kbd/index.js";
     import type { PageProps } from './$types';
     import { onDestroy } from "svelte";
+    import * as ButtonGroup from "$lib/components/ui/button-group/index.js";
 
     let { data }: PageProps = $props();
     let file: string = $derived(data.file);
     let sheets: Sheet[] = $derived(data.sheets);
     let headerHeight: number = $state(0);
+    let toolbarHeight: number = $state(0);
 
     let loading: boolean = $state(false);
 
@@ -63,7 +65,18 @@
             Loading...
         </div>
     {:else if sheets.length > 0}
-        <WorkbookPreview checked {sheets} headerHeight={headerHeight} />
+        <div class="p-2 text-gray-500" bind:clientHeight={toolbarHeight}>
+            <ButtonGroup.Root>
+                <ButtonGroup.Root>
+                    <Button size="xs" variant="outline" title="表头只能选择一行">设为表头</Button>
+                    <Button size="xs" variant="outline">隐藏行</Button>
+                </ButtonGroup.Root>
+                <ButtonGroup.Root>
+                    <Button size="xs" variant="outline">隐藏列</Button>
+                </ButtonGroup.Root>
+            </ButtonGroup.Root>
+        </div>
+        <WorkbookPreview border checked {sheets} headerHeight={headerHeight + toolbarHeight} />
     {:else}
         <Empty.Root>
             <Empty.Header>

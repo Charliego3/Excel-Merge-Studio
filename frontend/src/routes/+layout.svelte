@@ -7,6 +7,7 @@
     import { setContext } from "svelte";
     import { WorkbooksMeta } from "../../bindings/merger/services/workbook";
     import type { WorkbookMeta } from "../../bindings/merger/utility";
+    import { ModeWatcher } from "mode-watcher";
 
     let isMac = navigator.userAgent.includes("Mac");
 
@@ -33,6 +34,7 @@
     }
 </script>
 
+<ModeWatcher />
 <div class="flex w-full h-full">
     <div bind:clientWidth={sidebarWidth}
         class={`border-r select-none flex-none border-r-gray-300 w-64 flex flex-col bg-[#FBFBFA]`}
