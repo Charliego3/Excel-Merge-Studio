@@ -62,7 +62,7 @@
                 <span class="text-gray-400 text-[11px]">无工作薄</span>
             </div>
         {:else}
-            <div class="overflow-y-auto px-2 pb-2 flex flex-col gap-2 mt-1">
+            <div class="overflow-y-auto overflow-x-hidden px-2 pb-2 flex flex-col gap-2 mt-1">
                 {#each workbooks as book, index}
                     <WorkBook {book} {index} />
                 {/each}

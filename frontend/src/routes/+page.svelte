@@ -78,12 +78,12 @@
         </div>
         <WorkbookPreview border checked {sheets} headerHeight={headerHeight + toolbarHeight} />
     {:else}
-        <Empty.Root>
+        <Empty.Root class="select-none">
             <Empty.Header>
                 <Empty.Media variant="icon">
                     <SheetIcon size={30} color="#127A65" />
                 </Empty.Media>
-                <Empty.Title>未选择任何文件</Empty.Title>
+                <Empty.Title>选择文件</Empty.Title>
                 <Empty.Description class="text-[12px]/6">
                     请选择一个表格文件进行打开和查看。支持的文件格式：
                     <Kbd.Group>
