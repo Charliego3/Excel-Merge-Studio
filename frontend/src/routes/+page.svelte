@@ -37,7 +37,7 @@
             <span class="font-bold">
                 文件与工作簿
                 {#if sheets.length > 0}
-                    <span class="text-[11px] font-normal text-gray-500 ml-1">(选择表头，所需列)</span>
+                    <span class="text-[11px] font-normal text-gray-500 ml-1">(选择表头，所需列，隐藏行/列)</span>
                 {/if}
             </span>
             <span class="text-[11px] text-gray-500">{file}</span>
@@ -56,8 +56,7 @@
         <div class="flex justify-center items-center">
             Loading...
         </div>
-    {/if}
-    {#if sheets.length > 0}
+    {:else if sheets.length > 0}
         <WorkbookPreview checked {sheets} headerHeight={headerHeight} />
     {:else}
         <Empty.Root>

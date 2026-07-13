@@ -8,6 +8,8 @@ import {
     TableColumnsSplit,
     Fullscreen,
 } from "@lucide/svelte";
+import { WorkbooksMeta } from "../../bindings/merger/services/workbook";
+import { Window } from "@wailsio/runtime";
 
 export const load: PageLoad = async () => {
     return {
@@ -45,5 +47,7 @@ export const load: PageLoad = async () => {
                 iconBgColor: "oklch(93% 0.034 272.788)",
             },
         ],
+        workbooks: await WorkbooksMeta(),
+        fullscreen: await Window.IsFullscreen(),
     };
 };

@@ -1,40 +1,38 @@
 <script lang="ts">
     import "../layout.css";
-    import type { Flow } from "$lib/types";
     import WorkBook from "$lib/components/WorkBook.svelte";
     import FlowStep from "$lib/components/FlowStep.svelte";
-    import { setStateContext, sidebarWidthKey, type State } from "$lib/state";
-    import { Window, Events } from "@wailsio/runtime";
-    import { onMount, setContext } from "svelte";
+    import { getStateContext, setStateContext, sidebarWidthKey, type State } from "$lib/state";
+    import { Events } from "@wailsio/runtime";
+    import { setContext } from "svelte";
     import { WorkbooksMeta } from "../../bindings/merger/services/workbook";
     import type { WorkbookMeta } from "../../bindings/merger/utility";
 
-    let fullscreen: boolean = $state(false);
-    Events.On("common:WindowFullscreen", () => (fullscreen = true));
-    Events.On("common:WindowUnFullscreen", () => (fullscreen = false));
-    let appState: State = $state({ main_index: 0, work_index: -1 });
-    setStateContext(appState);
     let isMac = navigator.userAgent.includes("Mac");
-    let { data, children }: { data: Flow; children: any } = $props();
 
-    let flow = $state((() => data)());
-    let workbooks: (WorkbookMeta | null)[] | null = $state([]);
+    let { data, children }: { data: {
+        steps: FlowStep[];
+        workbooks: (WorkbookMeta | null)[] | null
+        fullscreen: boolean;
+    }; children: any } = $props();
+    let steps: any = $derived(data.steps);
+    let workbooks: (WorkbookMeta | null)[] | null = $derived(data.workbooks);
+    let fullscreen: boolean = $derived(data.fullscreen);
+
     let sidebarWidth = $state(0);
     setContext(sidebarWidthKey, () => sidebarWidth);
 
-    let windowWidth: number = $state(window.innerWidth);
-
+    Events.On("common:WindowFullscreen", () => (fullscreen = true));
+    Events.On("common:WindowUnFullscreen", () => (fullscreen = false));
     Events.On("workbooks:updated", async () => {
         workbooks = await WorkbooksMeta();
     });
 
-    onMount(async () => {
-        window.addEventListener("resize", async () => {
-            windowWidth = (await Window.Size()).width;
-        });
-        fullscreen = await Window.IsFullscreen();
-        workbooks = await WorkbooksMeta();
-    });
+    let appState: State = $state({ main_index: 0, work_index: -1 });
+    let context = getStateContext();
+    if (!context) {
+        setStateContext(appState);
+    }
 </script>
 
 <div class="flex w-full h-full">
@@ -46,7 +44,7 @@
         {/if}
 
         <div class="flex flex-col p-2 gap-2">
-            {#each flow.steps as step: FlowStep, index}
+            {#each steps as step, index}
                 <FlowStep {step} {index} />
             {/each}
         </div>
@@ -61,7 +59,7 @@
             <div
                 class={`h-full border border-gray-300 m-2 flex items-center justify-center ${isMac ? "rounded-2xl" : "rounded-lg"}`}
             >
-                <span>No Data</span>
+                <span class="text-gray-400 text-[11px]">无工作薄</span>
             </div>
         {:else}
             <div class="overflow-y-auto px-2 pb-2 flex flex-col gap-2 mt-1">
@@ -72,7 +70,7 @@
         {/if}
     </div>
 
-    <div class="w-full h-full bg-white" style={`width: ${windowWidth - sidebarWidth}px;`}>
+    <div class="w-full h-full bg-white" style={`width: calc(100vw - ${sidebarWidth}px);`}>
         {@render children()}
     </div>
 </div>
