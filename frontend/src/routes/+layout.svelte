@@ -24,9 +24,7 @@
 
     Events.On("common:WindowFullscreen", () => (fullscreen = true));
     Events.On("common:WindowUnFullscreen", () => (fullscreen = false));
-    Events.On("workbooks:updated", async () => {
-        workbooks = await WorkbooksMeta();
-    });
+    Events.On("workbooks:updated", async () => workbooks = await WorkbooksMeta());
 
     let appState: State = $state({ main_index: 0, work_index: -1 });
     let context = getStateContext();

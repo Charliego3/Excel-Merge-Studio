@@ -19,7 +19,7 @@ type Reader struct {
 	reading bool
 }
 
-func (r *Reader) read(id, file string) map[string]any {
+func (r *Reader) read(id, file string) []*utility.Sheet {
 	var err error
 	defer func() {
 		message := recover()
@@ -151,10 +151,7 @@ func (r *Reader) read(id, file string) map[string]any {
 
 	(&Workbook{}).AddWorkbook(r.workbook)
 	utility.State().App.Event.Emit("workbooks:updated")
-	return map[string]any{
-		"file":   file,
-		"sheets": sheets,
-	}
+	return sheets
 }
 
 func (r *Reader) isMerged(row, column int) bool {
@@ -270,12 +267,17 @@ func (r *Reader) ShowFilePicker() map[string]any {
 
 	if !<-ch {
 		return map[string]any{
+			"id":     id,
 			"file":   path,
 			"sheets": wk.Sheets(id),
 		}
 	}
-	fmt.Println(path)
-	return r.read(id, path)
+	fmt.Println(path, id)
+	return map[string]any{
+		"id":     id,
+		"file":   path,
+		"sheets": r.read(id, path),
+	}
 }
 
 type merge struct {

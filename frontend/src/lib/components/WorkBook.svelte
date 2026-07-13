@@ -15,6 +15,7 @@
         state.work_index = index;
         state.main_index = -1;
         goto(`/preview?id=${book?.ID}`);
+        localStorage.setItem("currentId", book?.ID ?? "");
     }}
     class={`group flex border rounded-lg w-60 hover:cursor-pointer p-2 items-center gap-2 justify-between ${state.work_index == index ? "border-[#98cdbc] bg-green-50" : "border-gray-300"}`}
 >
@@ -41,7 +42,11 @@
             e.stopPropagation();
             RemoveWorkbook(book?.ID ?? "").then(async () => {
                 WorkbooksMeta().then((books) => {
-                    if (!books?.some(book => book.ID === book?.ID)) {
+                    let currentId = localStorage.getItem("currentId");
+                    if (!currentId) return;
+                    let ids = books?.map(book => book.ID);
+                    // console.dir({current: localStorage.getItem("currentId"), names: ids, id: book?.ID})
+                    if (!ids?.includes(currentId)) {
                         goto("/", { invalidateAll: true });
                     }
                 });

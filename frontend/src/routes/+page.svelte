@@ -8,6 +8,7 @@
     import WorkbookPreview from "$lib/components/WorkbookPreview.svelte";
     import * as Kbd from "$lib/components/ui/kbd/index.js";
     import type { PageProps } from './$types';
+    import { onDestroy } from "svelte";
 
     let { data }: PageProps = $props();
     let file: string = $derived(data.file);
@@ -16,12 +17,17 @@
 
     let loading: boolean = $state(false);
 
+    onDestroy(() => {
+        localStorage.removeItem("currentId");
+    });
+
     function onWorkbookLoaded() {
         loading = true;
         ShowFilePicker()
             .then((data: any) => {
                 file = data.file;
                 sheets = data.sheets;
+                localStorage.setItem("currentId", data.id);
             })
             .catch((e) => console.log(e))
             .finally(() => loading = false);
