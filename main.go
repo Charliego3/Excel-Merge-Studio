@@ -43,7 +43,7 @@ func main() {
 		/// TODO: Restore window bounds on startup
 		X:      0,
 		Y:      400,
-		Width:  750,
+		Width:  900,
 		Height: 718,
 
 		InitialPosition: application.WindowXY,

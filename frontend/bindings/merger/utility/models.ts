@@ -11,13 +11,23 @@ export interface Cell {
     "ColSpan": number;
     "RowSpan": number;
     "Skip": boolean;
+    "Columns": number;
+    "StartRow": number;
+    "StartCol": number;
+    "EndRow": number;
+    "EndCol": number;
+}
+
+export interface Row {
+    "Columns": number;
+    "Data": Cell[] | null;
 }
 
 export interface Sheet {
     "Name": string;
     "Columns": number;
     "Rows": number;
-    "Data": (Cell[] | null)[] | null;
+    "Data": (Row | null)[] | null;
 }
 
 export interface Workbook {

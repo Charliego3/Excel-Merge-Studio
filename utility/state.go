@@ -37,7 +37,12 @@ type Sheet struct {
 	Name    string
 	Columns int
 	Rows    int
-	Data    [][]Cell
+	Data    []*Row
+}
+
+type Row struct {
+	Columns int
+	Data    []Cell
 }
 
 type Cell struct {
@@ -50,6 +55,12 @@ type Cell struct {
 	RowSpan int
 
 	Skip bool
+
+	Columns  int
+	StartRow int
+	StartCol int
+	EndRow   int
+	EndCol   int
 }
 
 var state *AppState = &AppState{

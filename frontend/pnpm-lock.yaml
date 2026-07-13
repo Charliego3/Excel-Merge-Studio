@@ -11,6 +11,9 @@ importers:
       '@wailsio/runtime':
         specifier: latest
         version: 3.0.0-alpha.97
+      mode-watcher:
+        specifier: ^1.1.0
+        version: 1.1.0(svelte@5.56.4)
     devDependencies:
       '@fontsource-variable/inter':
         specifier: ^5.2.8
@@ -595,6 +598,11 @@ packages:
     resolution: {integrity: sha512-r9deDe9p5FJUPZAk3A59wGH7Ii9YrjjWw0jmw/liSbHl2CHiyXj6FcDXDu2K3TjVAXqiJdaw3xxwlZZr9E6nHg==}
     hasBin: true
 
+  mode-watcher@1.1.0:
+    resolution: {integrity: sha512-mUT9RRGPDYenk59qJauN1rhsIMKBmWA3xMF+uRwE8MW/tjhaDSCCARqkSuDTq8vr4/2KcAxIGVjACxTjdk5C3g==}
+    peerDependencies:
+      svelte: ^5.27.0
+
   mri@1.2.0:
     resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
     engines: {node: '>=4'}
@@ -649,6 +657,16 @@ packages:
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
 
+  runed@0.23.4:
+    resolution: {integrity: sha512-9q8oUiBYeXIDLWNK5DfCWlkL0EW3oGbk845VdKlPeia28l751VpfesaB/+7pI6rnbx1I6rqoZ2fZxptOJLxILA==}
+    peerDependencies:
+      svelte: ^5.7.0
+
+  runed@0.25.0:
+    resolution: {integrity: sha512-7+ma4AG9FT2sWQEA0Egf6mb7PBT2vHyuHail1ie8ropfSjvZGtEAx8YTmUjv/APCsdRRxEVvArNjALk9zFSOrg==}
+    peerDependencies:
+      svelte: ^5.7.0
+
   runed@0.35.1:
     resolution: {integrity: sha512-2F4Q/FZzbeJTFdIS/PuOoPRSm92sA2LhzTnv6FXhCoENb3huf5+fDuNOg1LNvGOouy3u/225qxmuJvcV3IZK5Q==}
     peerDependencies:
@@ -695,6 +713,12 @@ packages:
     engines: {node: '>=18', pnpm: '>=8.7.0'}
     peerDependencies:
       svelte: ^5.30.2
+
+  svelte-toolbelt@0.7.1:
+    resolution: {integrity: sha512-HcBOcR17Vx9bjaOceUvxkY3nGmbBmCBBbuWLLEWO6jtmWH8f/QoWmbyUfQZrpDINH39en1b8mptfPQT9VKQ1xQ==}
+    engines: {node: '>=18', pnpm: '>=8.7.0'}
+    peerDependencies:
+      svelte: ^5.0.0
 
   svelte@5.56.4:
     resolution: {integrity: sha512-/d0QHehmRuJW8gVz395MTkPcPozxzdjBMBE8oEYGz8O3b9KTMzzQ9ZHJQLuFKOHOPQbU6kx/X4iid/EBBzH7iw==}
@@ -1190,6 +1214,12 @@ snapshots:
 
   mini-svg-data-uri@1.4.4: {}
 
+  mode-watcher@1.1.0(svelte@5.56.4):
+    dependencies:
+      runed: 0.25.0(svelte@5.56.4)
+      svelte: 5.56.4
+      svelte-toolbelt: 0.7.1(svelte@5.56.4)
+
   mri@1.2.0: {}
 
   mrmime@2.0.1: {}
@@ -1245,6 +1275,16 @@ snapshots:
       '@rolldown/binding-wasm32-wasi': 1.1.4
       '@rolldown/binding-win32-arm64-msvc': 1.1.4
       '@rolldown/binding-win32-x64-msvc': 1.1.4
+
+  runed@0.23.4(svelte@5.56.4):
+    dependencies:
+      esm-env: 1.2.2
+      svelte: 5.56.4
+
+  runed@0.25.0(svelte@5.56.4):
+    dependencies:
+      esm-env: 1.2.2
+      svelte: 5.56.4
 
   runed@0.35.1(@sveltejs/kit@2.69.1(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.4)(vite@8.1.3(jiti@2.7.0)))(svelte@5.56.4)(typescript@6.0.3)(vite@8.1.3(jiti@2.7.0)))(svelte@5.56.4):
     dependencies:
@@ -1302,6 +1342,13 @@ snapshots:
       svelte: 5.56.4
     transitivePeerDependencies:
       - '@sveltejs/kit'
+
+  svelte-toolbelt@0.7.1(svelte@5.56.4):
+    dependencies:
+      clsx: 2.1.1
+      runed: 0.23.4(svelte@5.56.4)
+      style-to-object: 1.0.14
+      svelte: 5.56.4
 
   svelte@5.56.4:
     dependencies:

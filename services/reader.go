@@ -10,11 +10,19 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
+type MergeIndex struct {
+	// 所有属于合并区域的单元格
+	cells map[string]*MergeInfo
+
+	// 合并区域左上角
+	starts map[string]*MergeInfo
+}
+
 type Reader struct {
 	file     *excelize.File
 	workbook *utility.Workbook
 	sheet    *utility.Sheet
-	merges   []merge
+	merges   *MergeIndex
 
 	reading bool
 }
@@ -59,7 +67,7 @@ func (r *Reader) read(id, file string) []*utility.Sheet {
 			return nil
 		}
 
-		rowIndex := 1
+		rowIdx := 1
 		for rows.Next() {
 			columns, err := rows.Columns()
 			if err != nil {
@@ -70,84 +78,79 @@ func (r *Reader) read(id, file string) []*utility.Sheet {
 				r.sheet.Columns = len(columns)
 			}
 
-			// fmt.Println("\n\n\nCells: ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓")
-			var rowValues []utility.Cell
+			row := &utility.Row{}
+			var colStart int
 			for index, _ := range columns {
 				var cell utility.Cell
-				columnIndex := index + 1
-				if r.onMerge(rowIndex, columnIndex, func(merge merge) {
-					cell.Value = merge.value
+				col := index + 1
+				merge, ok := r.merged(col, rowIdx)
+				if ok {
+					cell.Value = merge.Value
 					cell.IsMerged = true
-					cell.Skip = !(rowIndex == merge.startRow && columnIndex == merge.startCol)
-					cell.ColSpan = merge.endedCol - merge.startCol + 1
-					cell.RowSpan = merge.endedRow - merge.startRow + 1
-				}) {
-					cellName, _ := excelize.CoordinatesToCellName(columnIndex, rowIndex)
+					cell.Skip = !r.isMergeFirstCell(col, rowIdx)
+					cell.ColSpan = merge.ColSpan
+					cell.RowSpan = merge.RowSpan
+					cell.StartCol = merge.startCol
+					cell.EndCol = merge.endCol
+					cell.StartRow = merge.startRow
+					cell.EndRow = merge.endRow
+					colStart += cell.ColSpan
+					// if !cell.Skip {
+					// 	row.Columns += cell.ColSpan
+					// }
+				} else {
+					cellName, _ := excelize.CoordinatesToCellName(col, rowIdx)
 					cell.Value, _ = r.file.CalcCellValue(sheetName, cellName)
 					cell.ColSpan = 1
 					cell.RowSpan = 1
+					colStart++
+					cell.StartCol = colStart
+					cell.StartRow = rowIdx
+					row.Columns += 1
+				}
+
+				if cell.Skip {
+					continue
 				}
 
 				cell.Value = strings.TrimSpace(cell.Value)
-				// fmt.Printf("%#v\n", cell)
-				rowValues = append(rowValues, cell)
+				row.Data = append(row.Data, cell)
 			}
-			// fmt.Println("Cells: ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑\n\n\n")
-			rowIndex++
-			r.sheet.Data = append(r.sheet.Data, rowValues)
+			rowIdx++
+			r.sheet.Data = append(r.sheet.Data, row)
 		}
 
-		for index, columns := range r.sheet.Data {
-			var columnCount int
-			for _, column := range columns {
-				if column.IsMerged && !column.Skip {
-					columnCount += column.ColSpan
-				} else if !column.IsMerged {
-					columnCount++
+		for rowIdx, row := range r.sheet.Data {
+			if row.Columns < r.sheet.Columns {
+				for col := 0; col < r.sheet.Columns; {
+					axis, _ := excelize.CoordinatesToCellName(col+1, rowIdx+1)
+					if merge, ok := r.merges.cells[axis]; ok {
+						row.Columns += merge.ColSpan
+						col += merge.ColSpan
+					} else {
+						col++
+					}
 				}
 			}
 
-			if columnCount < r.sheet.Columns {
-			OUTER:
-				for i := 0; i < r.sheet.Columns; {
-					if columnCount >= r.sheet.Columns {
-						break OUTER
-					}
-					for j, merge := range r.merges {
-						_ = j
-						if merge.endedRow >= index &&
-							merge.startRow <= index &&
-							merge.endedCol >= i+1 &&
-							merge.startCol <= i+1 {
-							columnCount += merge.endedCol - merge.startCol + 1
-							i += merge.endedCol - merge.startCol
-							continue OUTER
-						}
-					}
-					i++
+			if row.Columns < r.sheet.Columns {
+				for i := 0; i < r.sheet.Columns-row.Columns; i++ {
+					row.Data = append(row.Data, utility.Cell{ColSpan: 1, RowSpan: 1})
 				}
-			}
-
-			if columnCount < r.sheet.Columns {
-				for i := columnCount; i < r.sheet.Columns; i++ {
-					columns = append(columns, utility.Cell{})
-					columnCount++
-				}
-				r.sheet.Data[index] = columns
 			}
 		}
 
 	ROW:
 		for i := len(r.sheet.Data) - 1; i >= 0; i-- {
-			for _, v := range r.sheet.Data[i] {
-				if v.Value != "" {
+			for _, row := range r.sheet.Data[i].Data {
+				if row.Value != "" {
 					break ROW
 				}
 			}
 			r.sheet.Data = r.sheet.Data[:i]
 		}
 
-		r.sheet.Rows = rowIndex
+		r.sheet.Rows = rowIdx
 		r.merges = nil
 		err = rows.Close()
 		if err != nil {
@@ -162,56 +165,76 @@ func (r *Reader) read(id, file string) []*utility.Sheet {
 	return sheets
 }
 
-func (r *Reader) isMerged(row, column int) bool {
-	if r.merges == nil {
-		r.initCurrentSheetMerges()
-	}
-
-	for _, merge := range r.merges {
-		if row >= merge.startRow && row <= merge.endedRow && column >= merge.startCol && column <= merge.endedCol {
-			return true
-		}
+func (r *Reader) isMerged(col, row int) bool {
+	if _, ok := r.merged(col, row); ok {
+		return true
 	}
 	return false
 }
 
-func (r *Reader) onMerge(row, column int, fn func(merge merge)) bool {
+func (r *Reader) isMergeFirstCell(col, row int) bool {
+	_, ok := r.mergeIndex(col, row, func(axis string) (*MergeInfo, bool) {
+		info, ok := r.merges.starts[axis]
+		return info, ok
+	})
+	return ok
+}
+
+func (r *Reader) merged(col, row int) (*MergeInfo, bool) {
+	return r.mergeIndex(col, row, func(axis string) (*MergeInfo, bool) {
+		info, ok := r.merges.cells[axis]
+		return info, ok
+	})
+}
+
+func (r *Reader) mergeIndex(col, row int, fn func(string) (*MergeInfo, bool)) (*MergeInfo, bool) {
 	if r.merges == nil {
 		r.initCurrentSheetMerges()
 	}
 
-	for _, merge := range r.merges {
-		if row >= merge.startRow && row <= merge.endedRow && column >= merge.startCol && column <= merge.endedCol {
-			fn(merge)
-			return false
-		}
+	axis, _ := excelize.CoordinatesToCellName(col, row)
+	if info, ok := fn(axis); ok {
+		return info, true
 	}
-	return true
+	return nil, false
 }
 
 func (r *Reader) initCurrentSheetMerges() {
-	mergeCells, err := r.file.GetMergeCells(r.sheet.Name)
+	merges, err := r.file.GetMergeCells(r.sheet.Name)
 	if err != nil {
 		panic(err)
 	}
 
-	var merges []merge
-	for _, cell := range mergeCells {
-		merge := merge{}
-		merge.startCol, merge.startRow, err = excelize.CellNameToCoordinates(cell.GetStartAxis())
-		if err != nil {
-			panic(err)
+	r.merges = &MergeIndex{
+		cells:  make(map[string]*MergeInfo),
+		starts: make(map[string]*MergeInfo),
+	}
+	for _, m := range merges {
+		sc, sr, _ := excelize.CellNameToCoordinates(m.GetStartAxis())
+		ec, er, _ := excelize.CellNameToCoordinates(m.GetEndAxis())
+
+		info := &MergeInfo{
+			Start:   m.GetStartAxis(),
+			End:     m.GetEndAxis(),
+			RowSpan: er - sr + 1,
+			ColSpan: ec - sc + 1,
+			Value:   m.GetCellValue(),
+
+			startRow: sr,
+			startCol: sc,
+			endRow:   er,
+			endCol:   ec,
 		}
 
-		merge.endedCol, merge.endedRow, err = excelize.CellNameToCoordinates(cell.GetEndAxis())
-		if err != nil {
-			panic(err)
+		r.merges.starts[m.GetStartAxis()] = info
+
+		for i := sr; i <= er; i++ {
+			for c := sc; c <= ec; c++ {
+				axis, _ := excelize.CoordinatesToCellName(c, i)
+				r.merges.cells[axis] = info
+			}
 		}
-		merge.value = cell.GetCellValue()
-		merges = append(merges, merge)
 	}
-	r.merges = merges
-	// fmt.Printf("Merges: %#v\n\n", merges)
 }
 
 func (r *Reader) reset() error {
@@ -288,9 +311,14 @@ func (r *Reader) ShowFilePicker() map[string]any {
 	}
 }
 
-type merge struct {
-	startCol, startRow int
-	endedCol, endedRow int
+type MergeInfo struct {
+	Start   string
+	End     string
+	RowSpan int
+	ColSpan int
 
-	value string
+	startRow, startCol int
+	endRow, endCol     int
+
+	Value string
 }

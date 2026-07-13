@@ -2,7 +2,7 @@
     import { Sheet } from "@lucide/svelte";
     import { getStateContext } from "$lib/state";
     import { CircleX } from "@lucide/svelte";
-    import { goto } from "$app/navigation";
+    import { goto, invalidateAll } from "$app/navigation";
     import type { WorkbookMeta } from "../../../bindings/merger/utility";
     import { RemoveWorkbook, WorkbooksMeta } from "../../../bindings/merger/services/workbook";
 
@@ -48,6 +48,8 @@
                     // console.dir({current: localStorage.getItem("currentId"), names: ids, id: book?.ID})
                     if (!ids?.includes(currentId)) {
                         goto("/", { invalidateAll: true });
+                    } else {
+                        invalidateAll();
                     }
                 });
             });

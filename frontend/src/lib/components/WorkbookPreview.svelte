@@ -5,6 +5,7 @@
     import SheetPreview from '$lib/components/SheetPreview.svelte';
 
     let {
+        tabBorder = false,
         border = false,
         sheets,
         headerHeight,
@@ -12,6 +13,7 @@
         onRowSelected,
         onColSelected,
     }: {
+        tabBorder?: boolean;
         border?: boolean;
         sheets: (Sheet | null)[] | null,
         headerHeight: number;
@@ -22,7 +24,7 @@
 </script>
 
 <div class="flex-1 h-full overflow-hidden">
-    <Tabs.Root class="h-full" value={sheets?.[0]?.Name}>
+    <Tabs.Root class={`h-full ${tabBorder && sheets && sheets?.length > 1 ? 'border-t' : ''}`} value={sheets?.[0]?.Name}>
         {#if sheets && sheets?.length > 1}
             <ScrollArea orientation="horizontal" class="pt-1 px-1" scrollbarXClasses="hidden">
                 <Tabs.List>

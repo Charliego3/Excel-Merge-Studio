@@ -23,9 +23,9 @@ export const load: PageLoad = async () => {
                 iconBgColor: "oklch(96.2% 0.059 95.617)",
             },
             {
-                name: "主键",
-                path: "/upload",
-                description: "客户编号",
+                name: "主键列 & 表头",
+                path: "/key",
+                description: "设置列 (表头、隐藏、选择)",
                 icon: KeyRound,
                 iconColor: "oklch(70.4% 0.191 22.216)",
                 iconBgColor: "oklch(93.6% 0.032 17.717)",

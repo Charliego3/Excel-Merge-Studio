@@ -3,6 +3,7 @@
 
 export type {
     Cell,
+    Row,
     Sheet,
     Workbook,
     WorkbookInfo,
