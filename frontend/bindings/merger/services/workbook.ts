@@ -25,6 +25,10 @@ export function GetWorkbook(id: string): $CancellablePromise<utility$0.WorkbookI
     return $Call.ByID(338056824, id);
 }
 
+export function RemoveSheet(main: utility$0.Main): $CancellablePromise<void> {
+    return $Call.ByID(2921729679, main);
+}
+
 export function RemoveWorkbook(id: string): $CancellablePromise<boolean> {
     return $Call.ByID(4261348268, id);
 }

@@ -3,9 +3,29 @@ package services
 import (
 	"fmt"
 	"merger/utility"
+	"slices"
 )
 
 type Workbook struct{}
+
+func (w *Workbook) RemoveSheet(main utility.Main) {
+	if wk, ok := utility.State().Workbooks[main.Workbook]; ok {
+		if len(wk.Sheets) < 2 {
+			utility.State().App.Dialog.Warning().
+				AttachToWindow(utility.State().MainWindow).
+				SetTitle("警告").
+				SetMessage("至少需要两个Sheet才能删除").
+				Show()
+			return
+		}
+		wk.SheetNames = slices.DeleteFunc(wk.SheetNames, func(name string) bool {
+			return name == main.Sheet
+		})
+		delete(wk.Sheets, main.Sheet)
+		utility.State().App.Event.Emit("workbooks:sheet:removed", main)
+		fmt.Println("删除Sheet:", main.Workbook, main.Sheet)
+	}
+}
 
 func (w *Workbook) RemoveWorkbook(id string) bool {
 	if _, ok := utility.State().Workbooks[id]; ok {

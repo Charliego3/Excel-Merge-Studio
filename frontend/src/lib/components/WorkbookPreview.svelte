@@ -4,6 +4,7 @@
     import type { Sheet } from "../../../bindings/merger/utility";
     import SheetPreview from '$lib/components/SheetPreview.svelte';
     import { X } from "@lucide/svelte";
+    import { RemoveSheet } from "../../../bindings/merger/services/workbook";
 
     let {
         tabBorder = false,
@@ -25,6 +26,7 @@
 
     function removeSheet(sheetName: string) {
         selectedSheet = sheets?.[0]?.Name ?? "";
+        RemoveSheet({ Workbook: selectedWorkbook, Sheet: sheetName });
     }
 </script>
 

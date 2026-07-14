@@ -13,11 +13,11 @@
     import Loading from "$lib/components/Loading.svelte";
     import { Events } from "@wailsio/runtime";
     import { setCurrentWorkbookId, clearCurrentWorkbookId } from "$lib/index.js";
-    import type { Setting } from "../../bindings/merger/utility/models";
+    import type { Main, Setting } from "../../bindings/merger/utility/models";
 
     let { data }: PageProps = $props();
     let file: string = $derived(data.file);
-    let sheets: Sheet[] = $derived(data.sheets);
+    let sheets: Sheet[] = $state((() => data.sheets)());
     let headerHeight: number = $state(0);
     let toolbarHeight: number = $state(0);
     let loading: boolean = $state(false);
@@ -30,6 +30,16 @@
         sheets = sheets.map((sheet) =>
             sheet.Name === data.Sheet ? { ...sheet, Header: data.Rows?.[0] ?? 0 } : sheet,
         );
+    });
+
+    Events.On("workbooks:sheet:removed", (e) => {
+        const main: Main = e.data;
+        console.dir({main, sheets})
+        const index = sheets.findIndex((sheet) => sheet.Name === main.Sheet);
+        let sheetName = index > 1 ? sheets[index - 1]?.Name : sheets[0]?.Name;
+        sheets = sheets.filter((sheet) => sheet.Name !== main.Sheet);
+        console.dir({index, sheets})
+        selectedSheet = sheetName ?? "";
     });
 
     onDestroy(() => clearCurrentWorkbookId());
