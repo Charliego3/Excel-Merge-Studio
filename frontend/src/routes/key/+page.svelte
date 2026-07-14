@@ -3,16 +3,25 @@
     import type { PageProps } from "./$types";
     import { GetWorkbook } from "../../../bindings/merger/services/workbook";
     import SettingAction from "$lib/components/SettingAction.svelte";
+    import { Events } from "@wailsio/runtime";
+    import type { Setting } from "../../../bindings/merger/utility/models";
 
     let { data }: PageProps = $props();
     let headerHeight = $state(0);
     let toolbarHeight = $state(0);
-    let selectedWorkbook = $derived.by(() => {
-        if (data.metas) return data.metas[0]?.ID;
-        return "";
-    });
+    let selectedWorkbook = $derived(data.metas?.[0]?.ID ?? "");
     let workbookInfo = $derived(await GetWorkbook(selectedWorkbook));
-    let selectedSheet: string = $derived(workbookInfo.Sheets?.[0]?.Name ?? "");
+    let sheets = $derived(workbookInfo.Sheets);
+    let selectedSheet: string = $derived((() => workbookInfo?.Sheets?.[0]?.Name ?? "")());
+
+    Events.On("workbook:sheet:setting", (e) => {
+        const data: Setting = e.data;
+        sheets = sheets?.map((sheet) =>
+            sheet && sheet.Name === data.Sheet
+                ? { ...sheet, Header: data.Rows?.[0] ?? 0 }
+                : sheet,
+        ) ?? [];
+    });
 </script>
 
 <div class="flex flex-col w-full h-full">
@@ -40,6 +49,6 @@
             <SettingAction {selectedSheet} />
         </div>
 
-        <WorkbookPreview tabBorder bind:selectedSheet checked border sheets={workbookInfo?.Sheets ?? []} headerHeight={headerHeight + toolbarHeight} />
+        <WorkbookPreview tabBorder bind:selectedSheet checked border sheets={sheets} headerHeight={headerHeight + toolbarHeight} />
     </div>
 </div>

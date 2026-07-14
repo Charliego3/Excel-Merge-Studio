@@ -27,11 +27,14 @@
     Events.On("workbook:read:start", () => loading = true);
     Events.On("workbook:sheet:setting", (e) => {
         const data: Setting = e.data;
-        console.log(data)
-        const sheet = sheets.filter(sheet => sheet.Name === data.Sheet)[0];
-        sheet.Header = data.Rows?.[0] ?? 0;
+        console.log(data);
+        sheets = sheets.map((sheet) =>
+            sheet.Name === data.Sheet
+                ? { ...sheet, Header: data.Rows?.[0] ?? 0 }
+                : sheet,
+        );
 
-        console.dir({sheet, sheets})
+        console.dir({ sheets });
     });
 
     onDestroy(() => clearCurrentWorkbookId());
@@ -49,7 +52,6 @@
     }
 </script>
 
-{workbookId}
 <div class="w-full h-full flex flex-col">
     <div
         bind:clientHeight={headerHeight}
