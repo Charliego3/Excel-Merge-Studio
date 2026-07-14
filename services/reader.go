@@ -61,7 +61,7 @@ func (r *Reader) read(id, file string) []*utility.Sheet {
 
 	var sheets []*utility.Sheet
 	for _, sheetName := range r.workbook.SheetNames {
-		r.sheet = &utility.Sheet{Name: sheetName}
+		r.sheet = &utility.Sheet{WorkbookId: id, Name: sheetName}
 		rows, err := r.file.Rows(sheetName)
 		if err != nil {
 			return nil
@@ -304,6 +304,7 @@ func (r *Reader) ShowFilePicker() map[string]any {
 		}
 	}
 	fmt.Println(path, id)
+	utility.State().App.Event.Emit("workbook:read:start")
 	return map[string]any{
 		"id":     id,
 		"file":   path,

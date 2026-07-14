@@ -7,7 +7,7 @@
     let {
         tabBorder = false,
         border = false,
-        sheets,
+        sheets = $bindable<(Sheet | null)[] | null>(null),
         headerHeight,
         checked = false,
         selectedSheet = $bindable<string>(undefined),
@@ -22,13 +22,13 @@
 </script>
 
 <div class="flex-1 h-full overflow-hidden">
-    <Tabs.Root class={`h-full ${tabBorder && sheets && sheets?.length > 1 ? 'border-t' : ''}`} bind:value={selectedSheet}>
+    <Tabs.Root class={`h-full rounded-none ${tabBorder && (sheets && sheets?.length > 1) ? 'border-t' : ''}`} bind:value={selectedSheet}>
         {#if sheets && sheets?.length > 1}
-            <ScrollArea orientation="horizontal" class="pt-1 px-1" scrollbarXClasses="hidden">
-                <Tabs.List>
+            <ScrollArea orientation="horizontal" class="-mb-1 py-0.5" scrollbarXClasses="hidden">
+                <Tabs.List class="bg-white pl-2 pr-3">
                     {#each sheets as sheet}
                         {#if sheet}
-                            <Tabs.Trigger class="text-[10px]" value={sheet.Name}>
+                            <Tabs.Trigger class="text-[10px] data-active:bg-indigo-200" value={sheet.Name}>
                                 {sheet.Name}
                             </Tabs.Trigger>
                         {/if}
@@ -42,7 +42,7 @@
                     <SheetPreview
                         {checked}
                         border={border || sheets?.length > 1}
-                        style={`height: calc(100vh ${sheets?.length > 1 ? "- 44px" : "+ 1px"} - ${headerHeight}px)`}
+                        style={`height: calc(100vh ${sheets?.length > 1 ? "- 40px" : "+ 1px"} - ${headerHeight}px)`}
                         sheet={sheet} />
                 </Tabs.Content>
             {/if}

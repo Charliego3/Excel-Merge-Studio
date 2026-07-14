@@ -25,6 +25,7 @@ func (w *Workbook) RemoveWorkbook(id string) bool {
 func (w *Workbook) GetWorkbook(id string) utility.WorkbookInfo {
 	if wk, ok := utility.State().Workbooks[id]; ok {
 		info := utility.WorkbookInfo{
+			ID:       id,
 			FilePath: wk.FilePath,
 			Name:     wk.Name,
 		}

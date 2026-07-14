@@ -25,6 +25,7 @@ func main() {
 		Services: []application.Service{
 			application.NewService(&services.Reader{}),
 			application.NewService(&services.Workbook{}),
+			application.NewService(&services.Setting{}),
 		},
 		Mac: application.MacOptions{
 			ApplicationShouldTerminateAfterLastWindowClosed: true,

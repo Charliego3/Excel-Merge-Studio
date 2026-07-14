@@ -5,6 +5,7 @@
     import { goto, invalidateAll } from "$app/navigation";
     import type { WorkbookMeta } from "../../../bindings/merger/utility";
     import { RemoveWorkbook, WorkbooksMeta } from "../../../bindings/merger/services/workbook";
+    import { getCurrentWorkbookId, setCurrentWorkbookId } from "$lib/index";
 
     let { book, index }: { book: WorkbookMeta | null; index: number } = $props();
     let state = getStateContext();
@@ -15,7 +16,7 @@
         state.work_index = index;
         state.main_index = -1;
         goto(`/preview?id=${book?.ID}`);
-        localStorage.setItem("currentWorkbookId", book?.ID ?? "");
+        setCurrentWorkbookId(book?.ID ?? "");
     }}
     class={`group flex border rounded-lg w-60 hover:cursor-pointer p-2 items-center gap-2 justify-between ${state.work_index == index ? "border-[#98cdbc] bg-green-50" : "border-gray-300"}`}
 >
@@ -42,7 +43,7 @@
             e.stopPropagation();
             RemoveWorkbook(book?.ID ?? "").then(async () => {
                 WorkbooksMeta().then((books) => {
-                    let currentId = localStorage.getItem("currentId");
+                    let currentId = getCurrentWorkbookId();
                     if (!currentId) return;
                     let ids = books?.map(book => book.ID);
                     // console.dir({current: localStorage.getItem("currentId"), names: ids, id: book?.ID})

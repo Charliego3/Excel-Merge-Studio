@@ -23,11 +23,20 @@ export interface Row {
     "Data": Cell[] | null;
 }
 
+export interface Setting {
+    "Workbook": string;
+    "Sheet": string;
+    "Cols": number[] | null;
+    "Rows": number[] | null;
+}
+
 export interface Sheet {
+    "WorkbookId": string;
     "Name": string;
     "Columns": number;
     "Rows": number;
     "Data": (Row | null)[] | null;
+    "Header": number;
 }
 
 export interface Workbook {
@@ -39,6 +48,7 @@ export interface Workbook {
 }
 
 export interface WorkbookInfo {
+    "ID": string;
     "FilePath": string;
     "Name": string;
     "Sheets": (Sheet | null)[] | null;

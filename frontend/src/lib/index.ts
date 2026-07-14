@@ -1,4 +1,5 @@
-// place files you want to import through the `$lib` alias in this folder.
+import type { Setting } from "../../bindings/merger/utility";
+
 export function index2column(index: number): string {
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let result = "";
@@ -9,20 +10,15 @@ export function index2column(index: number): string {
     return result;
 }
 
-export interface TableSelected {
-    sheet?: string | null;
-    rows: number[];
-    cols: number[];
-}
-
 /// 获取当前表格选中的行和列
-export function getCurrentTableSelected(sheet: string): TableSelected {
+export function getCurrentTableSelected(sheet: string): Setting {
     let table: HTMLTableElement | null = document.querySelector(`table[data-sheet="${sheet}"]`);
-    if (!table) return { sheet: undefined, rows: [], cols: [] };
+    if (!table) return { Workbook: "", Sheet: "", Rows: [], Cols: [] };
     return {
-        sheet: table.getAttribute('data-sheet'),
-        rows: getSelected(table, 'tbody tr td input'),
-        cols: getSelected(table, 'thead tr th input.thead-col'),
+        Workbook: table.getAttribute('data-workbook') ?? "",
+        Sheet: table.getAttribute('data-sheet') ?? "",
+        Rows: getSelected(table, 'tbody tr td input'),
+        Cols: getSelected(table, 'thead tr th input.thead-col'),
     };
 }
 
@@ -35,4 +31,16 @@ function getSelected(table: HTMLTableElement, selectors: string): number[] {
             return null;
         })
         .filter((index): index is number => index !== null);
+}
+
+export function setCurrentWorkbookId(id: string): void {
+    localStorage.setItem("currentWorkbookId", id);
+}
+
+export function getCurrentWorkbookId(): string | null {
+    return localStorage.getItem("currentWorkbookId");
+}
+
+export function clearCurrentWorkbookId(): void {
+    localStorage.removeItem("currentWorkbookId");
 }

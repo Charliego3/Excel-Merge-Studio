@@ -47,10 +47,10 @@
 
 {#if sheet?.Columns ?? 0 > 0}
     <div
-        class={`${classes} ${border ? "border-t border-t-[#EBEBEB]" : ""}`}
+        class={`${classes} ${border ? "border-t" : ""}`}
         {style}
     >
-        <table data-sheet={sheet?.Name} class="table-fixed" bind:this={table}>
+        <table data-sheet={sheet?.Name} data-workbook={sheet?.WorkbookId} class="table-fixed" bind:this={table}>
             <thead class="sticky top-0 h-5">
                 <tr>
                     <th class="relative">
@@ -73,8 +73,8 @@
             </thead>
             <tbody>
                 {#each sheet?.Data as row, rowIndex}
-                    <tr>
-                        <td>
+                    <tr data-header={sheet?.Header === rowIndex}>
+                        <td data-header={sheet?.Header === rowIndex}>
                             <div class="flex gap-2 items-center justify-center">
                                 {#if checked}
                                     <input id={`row-${rowIndex}`} type="checkbox" class="rounded border-input -mt-0.5"/>
@@ -84,7 +84,7 @@
                         </td>
                         {#each row?.Data as cell}
                             {#if !cell.Skip}
-                                <td
+                                <td data-header={sheet?.Header === rowIndex}
                                     title={`${cell.IsMerged ? index2column(cell.StartCol - 1) + (cell.StartRow) + ":" + index2column(cell.EndCol - 1) + (cell.EndRow) : index2column(cell.StartCol - 1) + cell.StartRow}`}
                                     colspan={cell.IsMerged ? cell.ColSpan : 1}
                                     rowspan={cell.IsMerged ? cell.RowSpan : 1}

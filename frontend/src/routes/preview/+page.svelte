@@ -4,6 +4,12 @@
 
     let { data }: {data: WorkbookInfo} = $props();
     let headerHeight = $state(0);
+    let selectedSheet: string = $derived.by(() => {
+        if (data?.Sheets) {
+            return data.Sheets[0]?.Name ?? "";
+        }
+        return "";
+    })
 </script>
 
 <div class="flex flex-col w-full h-full">
@@ -15,6 +21,6 @@
     </div>
 
     {#if data?.Sheets}
-        <WorkbookPreview sheets={data?.Sheets} headerHeight={headerHeight} />
+        <WorkbookPreview {selectedSheet} sheets={data?.Sheets} headerHeight={headerHeight} />
     {/if}
 </div>

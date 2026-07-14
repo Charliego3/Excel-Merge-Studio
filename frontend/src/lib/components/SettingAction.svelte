@@ -2,12 +2,12 @@
     import * as ButtonGroup from "$lib/components/ui/button-group/index.js";
     import { Button } from "$lib/components/ui/button/index.js";
     import { getCurrentTableSelected } from "$lib/index.js";
+    import { SetHeader } from "../../../bindings/merger/services/setting";
 
     let { selectedSheet = $bindable("") } = $props();
 
     function settingHeader() {
-        let selected = getCurrentTableSelected(selectedSheet);
-        console.log(selected)
+        SetHeader(getCurrentTableSelected(selectedSheet));
     }
 
     function hiddenRows() {

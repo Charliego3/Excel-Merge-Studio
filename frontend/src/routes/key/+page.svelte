@@ -1,6 +1,5 @@
 <script lang="ts">
     import WorkbookPreview from "$lib/components/WorkbookPreview.svelte";
-    import * as NativeSelect from "$lib/components/ui/native-select/index.js";
     import type { PageProps } from "./$types";
     import { GetWorkbook } from "../../../bindings/merger/services/workbook";
     import SettingAction from "$lib/components/SettingAction.svelte";
@@ -41,6 +40,6 @@
             <SettingAction {selectedSheet} />
         </div>
 
-        <WorkbookPreview bind:selectedSheet tabBorder checked border sheets={workbookInfo?.Sheets ?? []} headerHeight={headerHeight + toolbarHeight} />
+        <WorkbookPreview tabBorder bind:selectedSheet checked border sheets={workbookInfo?.Sheets ?? []} headerHeight={headerHeight + toolbarHeight} />
     </div>
 </div>

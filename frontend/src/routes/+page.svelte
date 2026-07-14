@@ -10,6 +10,10 @@
     import type { PageProps } from "./$types";
     import { onDestroy } from "svelte";
     import SettingAction from "$lib/components/SettingAction.svelte";
+    import Loading from "$lib/components/Loading.svelte";
+    import { Events } from "@wailsio/runtime";
+    import { setCurrentWorkbookId, clearCurrentWorkbookId } from "$lib/index.js";
+    import type { Setting } from "../../bindings/merger/utility/models";
 
     let { data }: PageProps = $props();
     let file: string = $derived(data.file);
@@ -17,25 +21,35 @@
     let headerHeight: number = $state(0);
     let toolbarHeight: number = $state(0);
     let loading: boolean = $state(false);
-    let selectedSheet: string = $derived(sheets[0]?.Name ?? "");
+    let selectedSheet: string = $state("");
+    let workbookId: string = $derived(data.id);
 
-    onDestroy(() => {
-        localStorage.removeItem("currentWorkbookId");
+    Events.On("workbook:read:start", () => loading = true);
+    Events.On("workbook:sheet:setting", (e) => {
+        const data: Setting = e.data;
+        console.log(data)
+        const sheet = sheets.filter(sheet => sheet.Name === data.Sheet)[0];
+        sheet.Header = data.Rows?.[0] ?? 0;
+
+        console.dir({sheet, sheets})
     });
 
+    onDestroy(() => clearCurrentWorkbookId());
+
     function onWorkbookLoaded() {
-        loading = true;
-        ShowFilePicker()
-            .then((data: any) => {
-                file = data.file;
-                sheets = data.sheets;
-                localStorage.setItem("currentId", data.id);
-            })
-            .catch((e) => console.log(e))
-            .finally(() => (loading = false));
+        ShowFilePicker().then((data: any) => {
+            workbookId = data.id;
+            file = data.file;
+            sheets = data.sheets;
+            selectedSheet = data.sheets[0]?.Name ?? "";
+            setCurrentWorkbookId(data.id);
+        })
+        .catch((e) => console.log(e))
+        .finally(() => (loading = false));
     }
 </script>
 
+{workbookId}
 <div class="w-full h-full flex flex-col">
     <div
         bind:clientHeight={headerHeight}
@@ -63,12 +77,15 @@
         {/if}
     </div>
     {#if loading}
-        <div class="flex justify-center items-center">Loading...</div>
+        <div class="h-full flex justify-center items-center">
+            <Loading {headerHeight} />
+        </div>
     {:else if sheets.length > 0}
         <div class="p-2" bind:clientHeight={toolbarHeight}>
             <SettingAction {selectedSheet} />
         </div>
         <WorkbookPreview
+            tabBorder
             border
             checked
             {sheets}

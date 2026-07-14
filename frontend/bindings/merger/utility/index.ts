@@ -4,6 +4,7 @@
 export type {
     Cell,
     Row,
+    Setting,
     Sheet,
     Workbook,
     WorkbookInfo,

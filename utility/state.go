@@ -4,6 +4,13 @@ import (
 	"github.com/wailsapp/wails/v3/pkg/application"
 )
 
+type Setting struct {
+	Workbook string
+	Sheet    string
+	Cols     []int
+	Rows     []int
+}
+
 type AppState struct {
 	App        *application.App
 	MainWindow *application.WebviewWindow
@@ -13,6 +20,7 @@ type AppState struct {
 }
 
 type WorkbookInfo struct {
+	ID       string
 	FilePath string
 	Name     string
 	Sheets   []*Sheet
@@ -34,10 +42,14 @@ type Workbook struct {
 }
 
 type Sheet struct {
+	WorkbookId string
+
 	Name    string
 	Columns int
 	Rows    int
 	Data    []*Row
+
+	Header int
 }
 
 type Row struct {

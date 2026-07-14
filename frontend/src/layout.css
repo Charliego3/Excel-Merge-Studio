@@ -131,8 +131,15 @@
     }
 
     .native-select {
-        @apply border-input focus:ring-0 h-6 min-w-0 appearance-none rounded-md bg-transparent py-1 pr-8 pl-2.5 text-xs shadow-xs transition-[color,box-shadow] select-none data-[size=sm]:h-6 outline-none disabled:pointer-events-none disabled:cursor-not-allowed;
+        @apply border-input ring-0 h-6 min-w-0 appearance-none rounded-md bg-transparent py-1 pr-8 pl-2.5 text-xs transition-[color,box-shadow] select-none outline-none disabled:pointer-events-none disabled:cursor-not-allowed;
     }
+}
+
+select,
+select:focus,
+select:focus-visible {
+    outline: none;
+    box-shadow: none;
 }
 
 caption {
@@ -206,9 +213,9 @@ thead tr th:last-child {
     filter: drop-shadow(0 1px #e5e7eb);
 }
 
-tbody tr:nth-child(odd) {
+/*tbody tr:nth-child(odd) {
     background-color: #fffef3;
-}
+}*/
 
 tbody tr td {
     padding: 8px 10px;
@@ -228,11 +235,29 @@ tbody tr td:first-child {
     padding: 8px 5px;
 }
 
+tbody tr[data-header="true"] {
+    z-index: 10000000;
+    font-size: 12px;
+    font-weight: bold;
+    position: sticky;
+    top: 1.625rem;
+}
+
+tbody tr td[data-header="true"] {
+    border-right: 1px solid #e5e7eb;
+    background-color: antiquewhite;
+    filter: drop-shadow(1px 0 #e5e7eb) drop-shadow(0 -1px 0 #e5e7eb) drop-shadow(0 1px #e5e7eb);
+}
+
+tbody tr td[data-header="true"]:last-child {
+    filter: drop-shadow(0 1px #e5e7eb) drop-shadow(0 -1px 0 #e5e7eb);
+}
+
 tbody tr {
     border-bottom: 1px solid #e5e7eb;
 }
 
-tbody tr:hover {
+tbody tr:hover:not(tr[data-header="true"]) {
     background-color: #f1f5f9 !important;
 }
 
