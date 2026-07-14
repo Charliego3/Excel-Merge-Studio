@@ -3,6 +3,7 @@
     import * as NativeSelect from "$lib/components/ui/native-select/index.js";
     import type { PageProps } from "./$types";
     import { GetWorkbook } from "../../../bindings/merger/services/workbook";
+    import SettingAction from "$lib/components/SettingAction.svelte";
 
     let { data }: PageProps = $props();
     let headerHeight = $state(0);
@@ -11,10 +12,8 @@
         if (data.metas) return data.metas[0]?.ID;
         return "";
     });
-    let workbookInfo = $derived.by(async () => {
-        if (!selectedWorkbook) return;
-        return await GetWorkbook(selectedWorkbook);
-    });
+    let workbookInfo = $derived(await GetWorkbook(selectedWorkbook));
+    let selectedSheet: string = $derived(workbookInfo.Sheets?.[0]?.Name ?? "");
 </script>
 
 <div class="flex flex-col w-full h-full">
@@ -29,18 +28,19 @@
     </div>
 
     <div class="w-full h-full">
-        <div class="p-2" bind:clientHeight={toolbarHeight}>
-            <NativeSelect.Root size="sm" value={selectedWorkbook}>
+        <div class="p-2 flex gap-2" bind:clientHeight={toolbarHeight}>
+            <select bind:value={selectedWorkbook} class="native-select">
                 {#if data.metas}
                     {#each data.metas as meta}
-                        <NativeSelect.Option value={meta.ID}>{meta.Name}</NativeSelect.Option>
+                        <option value={meta.ID}>{meta.Name}</option>
                     {/each}
                 {:else}
-                    <NativeSelect.Option value="">Select workbook</NativeSelect.Option>
+                    <option value="">Select workbook</option>
                 {/if}
-            </NativeSelect.Root>
+            </select>
+            <SettingAction {selectedSheet} />
         </div>
 
-        <WorkbookPreview tabBorder checked border sheets={(await workbookInfo)?.Sheets ?? []} headerHeight={headerHeight + toolbarHeight} />
+        <WorkbookPreview bind:selectedSheet tabBorder checked border sheets={workbookInfo?.Sheets ?? []} headerHeight={headerHeight + toolbarHeight} />
     </div>
 </div>

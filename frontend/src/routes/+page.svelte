@@ -7,20 +7,20 @@
     import { Sheet as SheetIcon } from "@lucide/svelte";
     import WorkbookPreview from "$lib/components/WorkbookPreview.svelte";
     import * as Kbd from "$lib/components/ui/kbd/index.js";
-    import type { PageProps } from './$types';
+    import type { PageProps } from "./$types";
     import { onDestroy } from "svelte";
-    import * as ButtonGroup from "$lib/components/ui/button-group/index.js";
+    import SettingAction from "$lib/components/SettingAction.svelte";
 
     let { data }: PageProps = $props();
     let file: string = $derived(data.file);
     let sheets: Sheet[] = $derived(data.sheets);
     let headerHeight: number = $state(0);
     let toolbarHeight: number = $state(0);
-
     let loading: boolean = $state(false);
+    let selectedSheet: string = $derived(sheets[0]?.Name ?? "");
 
     onDestroy(() => {
-        localStorage.removeItem("currentId");
+        localStorage.removeItem("currentWorkbookId");
     });
 
     function onWorkbookLoaded() {
@@ -32,7 +32,7 @@
                 localStorage.setItem("currentId", data.id);
             })
             .catch((e) => console.log(e))
-            .finally(() => loading = false);
+            .finally(() => (loading = false));
     }
 </script>
 
@@ -45,7 +45,9 @@
             <span class="font-bold">
                 文件与工作簿
                 {#if sheets.length > 0}
-                    <span class="text-[11px] font-normal text-gray-500 ml-1">(选择表头，所需列，隐藏行/列)</span>
+                    <span class="text-[11px] font-normal text-gray-500 ml-1"
+                        >(选择表头，所需列，隐藏行/列)</span
+                    >
                 {/if}
             </span>
             <span class="text-[11px] text-gray-500">{file}</span>
@@ -61,22 +63,18 @@
         {/if}
     </div>
     {#if loading}
-        <div class="flex justify-center items-center">
-            Loading...
-        </div>
+        <div class="flex justify-center items-center">Loading...</div>
     {:else if sheets.length > 0}
-        <div class="p-2 text-gray-500" bind:clientHeight={toolbarHeight}>
-            <ButtonGroup.Root>
-                <ButtonGroup.Root>
-                    <Button size="xs" variant="outline" title="表头只能选择一行">设为表头</Button>
-                    <Button size="xs" variant="outline">隐藏行</Button>
-                </ButtonGroup.Root>
-                <ButtonGroup.Root>
-                    <Button size="xs" variant="outline">隐藏列</Button>
-                </ButtonGroup.Root>
-            </ButtonGroup.Root>
+        <div class="p-2" bind:clientHeight={toolbarHeight}>
+            <SettingAction {selectedSheet} />
         </div>
-        <WorkbookPreview border checked {sheets} headerHeight={headerHeight + toolbarHeight} />
+        <WorkbookPreview
+            border
+            checked
+            {sheets}
+            bind:selectedSheet
+            headerHeight={headerHeight + toolbarHeight}
+        />
     {:else}
         <Empty.Root class="select-none">
             <Empty.Header>

@@ -15,7 +15,7 @@
         state.work_index = index;
         state.main_index = -1;
         goto(`/preview?id=${book?.ID}`);
-        localStorage.setItem("currentId", book?.ID ?? "");
+        localStorage.setItem("currentWorkbookId", book?.ID ?? "");
     }}
     class={`group flex border rounded-lg w-60 hover:cursor-pointer p-2 items-center gap-2 justify-between ${state.work_index == index ? "border-[#98cdbc] bg-green-50" : "border-gray-300"}`}
 >

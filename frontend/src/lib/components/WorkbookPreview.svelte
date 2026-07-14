@@ -10,21 +10,19 @@
         sheets,
         headerHeight,
         checked = false,
-        onRowSelected,
-        onColSelected,
+        selectedSheet = $bindable<string>(undefined),
     }: {
         tabBorder?: boolean;
         border?: boolean;
         sheets: (Sheet | null)[] | null,
         headerHeight: number;
         checked?: boolean
-        onRowSelected?: (row: number) => void;
-        onColSelected?: (col: number) => void;
+        selectedSheet: string;
     } = $props();
 </script>
 
 <div class="flex-1 h-full overflow-hidden">
-    <Tabs.Root class={`h-full ${tabBorder && sheets && sheets?.length > 1 ? 'border-t' : ''}`} value={sheets?.[0]?.Name}>
+    <Tabs.Root class={`h-full ${tabBorder && sheets && sheets?.length > 1 ? 'border-t' : ''}`} bind:value={selectedSheet}>
         {#if sheets && sheets?.length > 1}
             <ScrollArea orientation="horizontal" class="pt-1 px-1" scrollbarXClasses="hidden">
                 <Tabs.List>
@@ -43,8 +41,6 @@
                 <Tabs.Content class={`h-full ${sheets?.length > 1 ? "-mt-1" : ""}`} value={sheet.Name}>
                     <SheetPreview
                         {checked}
-                        {onColSelected}
-                        {onRowSelected}
                         border={border || sheets?.length > 1}
                         style={`height: calc(100vh ${sheets?.length > 1 ? "- 44px" : "+ 1px"} - ${headerHeight}px)`}
                         sheet={sheet} />
