@@ -46,9 +46,9 @@
                     <option value="">Select workbook</option>
                 {/if}
             </select>
-            <SettingAction {selectedSheet} />
+            <SettingAction {selectedWorkbook} {selectedSheet} />
         </div>
 
-        <WorkbookPreview tabBorder bind:selectedSheet checked border sheets={sheets} headerHeight={headerHeight + toolbarHeight} />
+        <WorkbookPreview {selectedWorkbook} tabBorder bind:selectedSheet checked border sheets={sheets} headerHeight={headerHeight + toolbarHeight} />
     </div>
 </div>

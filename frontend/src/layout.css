@@ -253,6 +253,13 @@ tbody tr td[data-header="true"]:last-child {
     filter: drop-shadow(0 1px #e5e7eb) drop-shadow(0 -1px 0 #e5e7eb);
 }
 
+tbody tr td[data-header="true"]:first-child {
+    position: sticky;
+    top: 1.625rem;
+    left: 0;
+    z-index: 20000000;
+}
+
 tbody tr {
     border-bottom: 1px solid #e5e7eb;
 }

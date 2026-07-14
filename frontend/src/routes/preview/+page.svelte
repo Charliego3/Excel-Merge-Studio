@@ -21,6 +21,6 @@
     </div>
 
     {#if data?.Sheets}
-        <WorkbookPreview {selectedSheet} sheets={data?.Sheets} headerHeight={headerHeight} />
+        <WorkbookPreview selectedWorkbook={data?.ID} {selectedSheet} sheets={data?.Sheets} headerHeight={headerHeight} />
     {/if}
 </div>

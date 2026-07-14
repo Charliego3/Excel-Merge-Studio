@@ -3,6 +3,7 @@
 
 export type {
     Cell,
+    Main,
     Row,
     Setting,
     Sheet,

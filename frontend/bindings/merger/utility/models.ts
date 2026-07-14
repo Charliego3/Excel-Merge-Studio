@@ -18,6 +18,11 @@ export interface Cell {
     "EndCol": number;
 }
 
+export interface Main {
+    "Workbook": string;
+    "Sheet": string;
+}
+
 export interface Row {
     "Columns": number;
     "Data": Cell[] | null;

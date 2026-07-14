@@ -11,12 +11,19 @@ type Setting struct {
 	Rows     []int
 }
 
+type Main struct {
+	Workbook string
+	Sheet    string
+}
+
 type AppState struct {
 	App        *application.App
 	MainWindow *application.WebviewWindow
 
 	WorkbookIds []string
 	Workbooks   map[string]*Workbook
+
+	Main Main
 }
 
 type WorkbookInfo struct {

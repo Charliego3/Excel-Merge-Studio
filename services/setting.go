@@ -4,6 +4,22 @@ import "merger/utility"
 
 type Setting struct{}
 
+func (s *Setting) GetMain() utility.Main {
+	return utility.State().Main
+}
+
+func (s *Setting) SetMain(model utility.Main) {
+	if model.Workbook == "" {
+		s.showWarning("请选择正确的工作薄")
+		return
+	}
+	if model.Sheet == "" {
+		s.showWarning("请选择正确的工作表")
+		return
+	}
+	utility.State().Main = model
+}
+
 func (s *Setting) SetHeader(model utility.Setting) {
 	if model.Workbook == "" {
 		s.showWarning("请选择正确的工作薄")

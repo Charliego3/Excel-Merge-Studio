@@ -23,7 +23,7 @@ export const load: PageLoad = async () => {
                 iconBgColor: "oklch(96.2% 0.059 95.617)",
             },
             {
-                name: "主键列 & 表头",
+                name: "主表 & 列/行",
                 path: "/key",
                 description: "设置列 (表头、隐藏、选择)",
                 icon: KeyRound,

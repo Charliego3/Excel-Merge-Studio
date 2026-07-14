@@ -27,14 +27,9 @@
     Events.On("workbook:read:start", () => loading = true);
     Events.On("workbook:sheet:setting", (e) => {
         const data: Setting = e.data;
-        console.log(data);
         sheets = sheets.map((sheet) =>
-            sheet.Name === data.Sheet
-                ? { ...sheet, Header: data.Rows?.[0] ?? 0 }
-                : sheet,
+            sheet.Name === data.Sheet ? { ...sheet, Header: data.Rows?.[0] ?? 0 } : sheet,
         );
-
-        console.dir({ sheets });
     });
 
     onDestroy(() => clearCurrentWorkbookId());
@@ -84,10 +79,11 @@
         </div>
     {:else if sheets.length > 0}
         <div class="p-2" bind:clientHeight={toolbarHeight}>
-            <SettingAction {selectedSheet} />
+            <SettingAction selectedWorkbook={workbookId} {selectedSheet} />
         </div>
         <WorkbookPreview
             tabBorder
+            selectedWorkbook={workbookId}
             border
             checked
             {sheets}
