@@ -25,7 +25,6 @@
     } = $props();
 
     function removeSheet(sheetName: string) {
-        selectedSheet = sheets?.[0]?.Name ?? "";
         RemoveSheet({ Workbook: selectedWorkbook, Sheet: sheetName });
     }
 </script>

@@ -1,5 +1,17 @@
 import type { Setting } from "../../bindings/merger/utility";
 
+export function removeSheet(sheets: Sheet[], sheetName: string, selectedSheet: string): {
+    sheets: Sheet[];
+    sheetName: string;
+} {
+    const index = sheets?.findIndex((sheet) => sheet?.Name === sheetName) ?? 0;
+    sheets = sheets?.filter((sheet) => sheet?.Name !== sheetName) ?? [];
+    if (sheetName === selectedSheet) {
+        selectedSheet = (index > 1 ? sheets?.[index - 1]?.Name : sheets?.[0]?.Name) ?? "";
+    }
+    return { sheets, sheetName: selectedSheet };
+}
+
 export function index2column(index: number): string {
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let result = "";

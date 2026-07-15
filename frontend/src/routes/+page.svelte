@@ -14,6 +14,7 @@
     import { Events } from "@wailsio/runtime";
     import { setCurrentWorkbookId, clearCurrentWorkbookId } from "$lib/index.js";
     import type { Main, Setting } from "../../bindings/merger/utility/models";
+    import { removeSheet } from "$lib/index.js";
 
     let { data }: PageProps = $props();
     let file: string = $derived(data.file);
@@ -25,7 +26,7 @@
     let workbookId: string = $derived(data.id);
 
     Events.On("workbook:read:start", () => loading = true);
-    Events.On("workbook:sheet:setting", (e) => {
+    Events.On("workbook:header:setting", (e) => {
         const data: Setting = e.data;
         sheets = sheets.map((sheet) =>
             sheet.Name === data.Sheet ? { ...sheet, Header: data.Rows?.[0] ?? 0 } : sheet,
@@ -34,9 +35,9 @@
 
     Events.On("workbooks:sheet:removed", (e) => {
         const main: Main = e.data;
-        const index = sheets.findIndex((sheet) => sheet.Name === main.Sheet);
-        selectedSheet = index > 1 ? sheets[index - 1]?.Name : sheets[0]?.Name;
-        sheets = sheets.filter((sheet) => sheet.Name !== main.Sheet);
+        const result = removeSheet(sheets, main.Sheet, selectedSheet);
+        sheets = result.sheets;
+        selectedSheet = result.sheetName;
     });
 
     onDestroy(() => clearCurrentWorkbookId());

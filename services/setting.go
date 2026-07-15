@@ -39,7 +39,7 @@ func (s *Setting) SetHeader(model utility.Setting) {
 	sheet := workbook.Sheets[model.Sheet]
 	sheet.Header = model.Rows[0]
 
-	utility.State().App.Event.Emit("workbook:sheet:setting", model)
+	utility.State().App.Event.Emit("workbook:header:setting", model)
 }
 
 func (s *Setting) showWarning(message string) {
