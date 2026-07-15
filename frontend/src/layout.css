@@ -229,10 +229,11 @@ tbody tr td:first-child {
     left: 0;
     background-color: ghostwhite;
     filter: drop-shadow(1px 0 #e5e7eb) drop-shadow(0 1px #e5e7eb);
-    text-align: center;
+    text-align: start;
     font-weight: bold;
     color: darkviolet;
-    padding: 8px 5px;
+    padding: 8px;
+    width: 1%;
 }
 
 tbody tr[data-header="true"] {

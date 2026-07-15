@@ -2,7 +2,7 @@
     import * as ButtonGroup from "$lib/components/ui/button-group/index.js";
     import { Button } from "$lib/components/ui/button/index.js";
     import { getCurrentTableSelected } from "$lib/index.js";
-    import { SetHeader, SetMain, GetMain } from "../../../bindings/merger/services/setting";
+    import { SetHeader, SetMain, GetMain, DeleteColsAndRows } from "../../../bindings/merger/services/setting";
     import { WorkbooksMeta } from "../../../bindings/merger/services/workbook";
 
     let { selectedWorkbook, selectedSheet } = $props();
@@ -15,21 +15,16 @@
         return desc;
     });
 
-    function settingHeader() {
+    function setHeader() {
         SetHeader(getCurrentTableSelected(selectedSheet));
     }
 
-    function hiddenRows() {
-
-    }
-
-    function hiddenCols() {
-
+    function deleteColsAndRows() {
+        DeleteColsAndRows(getCurrentTableSelected(selectedSheet))
     }
 
     function setMain() {
-        main = { Workbook: selectedWorkbook, Sheet: selectedSheet };
-        SetMain(main);
+        SetMain({ Workbook: selectedWorkbook, Sheet: selectedSheet });
     }
 </script>
 
@@ -38,10 +33,9 @@
         <Button title={description} onclick={setMain} size="xs" variant="outline">设为主表 (Sheet)</Button>
     </ButtonGroup.Root>
     <ButtonGroup.Root>
-        <Button onclick={settingHeader} size="xs" variant="outline" title="表头只能选择一行">设为表头</Button>
-        <Button onclick={hiddenRows} size="xs" variant="outline">隐藏行</Button>
+        <Button onclick={setHeader} size="xs" variant="outline" title="表头只能选择一行">设为表头</Button>
     </ButtonGroup.Root>
     <ButtonGroup.Root>
-        <Button onclick={hiddenCols} size="xs" variant="outline">隐藏列</Button>
+        <Button onclick={deleteColsAndRows} size="xs" variant="outline">删除行和列</Button>
     </ButtonGroup.Root>
 </ButtonGroup.Root>

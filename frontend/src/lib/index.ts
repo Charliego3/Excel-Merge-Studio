@@ -34,6 +34,55 @@ export function getCurrentTableSelected(sheet: string): Setting {
     };
 }
 
+export function unselectAll(sheet: string): void {
+    let table: HTMLTableElement | null = document.querySelector(`table[data-sheet="${sheet}"]`);
+    if (!table) return;
+    table.querySelectorAll('thead tr th input').forEach((el) => {
+        if (el instanceof HTMLInputElement) el.checked = false;
+    });
+    table.querySelectorAll('tbody tr td input').forEach((el) => {
+        if (el instanceof HTMLInputElement) el.checked = false;
+    });
+}
+
+export function deleteColsAndRows(sheets: Sheet[], setting: Setting): Sheet[] {
+    return sheets.map((sheet) => {
+        if (sheet.Name !== setting.Sheet || !sheet.Data) return sheet;
+        let maxCellCount = 0;
+        let rows = sheet.Data.filter((_, idx) => !setting.Rows?.includes(idx))
+            .map((row) => {
+                let cols = row.Data.filter((_, idx) => !setting.Cols?.includes(idx));
+                if (cols.length > maxCellCount) maxCellCount = cols.length;
+                return { ...row, Data: cols, Columns: cols.length };
+            })
+            .filter((row) => row.Columns > 0);
+        return { ...sheet, Data: rows, Columns: maxCellCount };
+    });
+}
+
+export function deleteCols(sheets: Sheet[], setting: Setting): Sheet[] {
+    return sheets.map((sheet) => {
+        if (sheet.Name !== setting.Sheet || !sheet.Data) return sheet;
+        let maxCellCount = 0;
+        let rows: Row[] = [];
+        for (let i = 0; i < sheet.Data.length; i++) {
+            const columns = sheet.Data[i]?.Data ?? [];
+            let cols = columns.filter((_, idx) => !setting.Cols?.includes(idx));
+            rows.push({ Columns: cols.length, Data: cols });
+            if (maxCellCount < cols.length) maxCellCount = cols.length;
+        }
+        return { ...sheet, Data: rows, Columns: maxCellCount };
+    });
+}
+
+export function deleteRows(sheets: Sheet[], setting: Setting): Sheet[] {
+    return sheets.map((sheet) => {
+        if (sheet.Name !== setting.Sheet || !sheet.Data) return sheet;
+        let rows = sheet.Data.filter((_, idx) => !setting.Rows?.includes(idx));
+        return { ...sheet, Data: rows, Rows: rows.length };
+    });
+}
+
 function getSelected(table: HTMLTableElement, selectors: string): number[] {
     return [...table.querySelectorAll(selectors)]
         .map((el, index) => {

@@ -109,9 +109,9 @@ func (r *Reader) read(id, file string) []*utility.Sheet {
 					row.Columns += 1
 				}
 
-				if cell.Skip {
-					continue
-				}
+				// if cell.Skip {
+				// 	continue
+				// }
 
 				cell.Value = strings.TrimSpace(cell.Value)
 				row.Data = append(row.Data, cell)
@@ -150,7 +150,7 @@ func (r *Reader) read(id, file string) []*utility.Sheet {
 			r.sheet.Data = r.sheet.Data[:i]
 		}
 
-		r.sheet.Rows = rowIdx
+		r.sheet.Rows = len(r.sheet.Data)
 		r.merges = nil
 		err = rows.Close()
 		if err != nil {
@@ -247,11 +247,7 @@ func (r *Reader) reset() error {
 
 func (r *Reader) ShowFilePicker() map[string]any {
 	if r.reading {
-		utility.State().App.Dialog.Warning().
-			SetTitle("正在读取中").
-			SetMessage("请稍候...").
-			AttachToWindow(utility.State().MainWindow).
-			Show()
+		utility.ShowWarning("正在读取中，请稍候...")
 		return nil
 	}
 
@@ -276,22 +272,13 @@ func (r *Reader) ShowFilePicker() map[string]any {
 	ch := make(chan bool, 1)
 	wk := &Workbook{}
 	if wk.ContainsWorkbook(id) {
-		dialog := utility.State().App.Dialog.Question().
-			SetTitle("该文件已经存在，是否要覆盖?").
-			AttachToWindow(utility.State().MainWindow).
-			SetMessage(fmt.Sprintf("Workbook %s is already open. Do you want to override it?", path))
-
-		cancelBtn := dialog.AddButton("取消")
-		cancelBtn.OnClick(func() {
-			ch <- false
-		})
-		overrideBtn := dialog.AddButton("覆盖")
-		overrideBtn.OnClick(func() {
-			ch <- true
-		})
-		dialog.SetDefaultButton(overrideBtn)
-		dialog.SetCancelButton(cancelBtn)
-		dialog.Show()
+		utility.Confirm(
+			"该文件已经存在，是否要覆盖?",
+			fmt.Sprintf("Workbook %s is already open. Do you want to override it?", path),
+			func(b bool) {
+				ch <- b
+			},
+		)
 	} else {
 		ch <- true
 	}

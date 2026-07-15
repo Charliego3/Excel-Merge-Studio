@@ -5,7 +5,7 @@
     import SettingAction from "$lib/components/SettingAction.svelte";
     import { Events } from "@wailsio/runtime";
     import type { Setting, Main } from "../../../bindings/merger/utility/models";
-    import { removeSheet } from "$lib/index";
+    import { removeSheet, deleteColsAndRows, unselectAll } from "$lib/index";
 
     let { data }: PageProps = $props();
     let headerHeight = $state(0);
@@ -31,6 +31,11 @@
         sheets = result.sheets;
         selectedSheet = result.sheetName;
     });
+
+    Events.On("setting:deleted:row_col", (e) => {
+        sheets = deleteColsAndRows(sheets || [], e.data);
+        unselectAll(selectedSheet);
+    })
 </script>
 
 <div class="flex flex-col w-full h-full">

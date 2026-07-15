@@ -18,9 +18,7 @@ func (w *Workbook) RemoveSheet(main utility.Main) {
 				Show()
 			return
 		}
-		wk.SheetNames = slices.DeleteFunc(wk.SheetNames, func(name string) bool {
-			return name == main.Sheet
-		})
+		slices.DeleteFunc(wk.SheetNames, func(name string) bool { return name == main.Sheet })
 		delete(wk.Sheets, main.Sheet)
 		utility.State().App.Event.Emit("workbooks:updated")
 		utility.State().App.Event.Emit("workbooks:sheet:removed", main)
@@ -31,12 +29,8 @@ func (w *Workbook) RemoveSheet(main utility.Main) {
 func (w *Workbook) RemoveWorkbook(id string) bool {
 	if _, ok := utility.State().Workbooks[id]; ok {
 		delete(utility.State().Workbooks, id)
-		for index, wkId := range utility.State().WorkbookIds {
-			if wkId == id {
-				utility.State().WorkbookIds = append(utility.State().WorkbookIds[:index], utility.State().WorkbookIds[index+1:]...)
-				break
-			}
-		}
+		slices.DeleteFunc(utility.State().WorkbookIds, func(wkId string) bool { return wkId == id })
+		fmt.Println(utility.State().WorkbookIds)
 		utility.State().App.Event.Emit("workbooks:updated")
 		return true
 	}
@@ -71,7 +65,12 @@ func (w *Workbook) Workbooks() []*utility.Workbook {
 func (w *Workbook) WorkbooksMeta() []utility.WorkbookMeta {
 	var metas []utility.WorkbookMeta
 	main := utility.State().Main
-	for _, wk := range utility.State().Workbooks {
+	for _, wkId := range utility.State().WorkbookIds {
+		wk := utility.State().Workbooks[wkId]
+		if wk == nil {
+			continue
+		}
+
 		metas = append(metas, utility.WorkbookMeta{
 			ID:         wk.ID,
 			FilePath:   wk.FilePath,

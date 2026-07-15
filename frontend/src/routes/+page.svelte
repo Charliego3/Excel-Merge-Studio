@@ -12,9 +12,9 @@
     import SettingAction from "$lib/components/SettingAction.svelte";
     import Loading from "$lib/components/Loading.svelte";
     import { Events } from "@wailsio/runtime";
-    import { setCurrentWorkbookId, clearCurrentWorkbookId } from "$lib/index.js";
-    import type { Main, Setting } from "../../bindings/merger/utility/models";
-    import { removeSheet } from "$lib/index.js";
+    import { setCurrentWorkbookId, clearCurrentWorkbookId, unselectAll } from "$lib/index.js";
+    import type { Main, Setting, Row } from "../../bindings/merger/utility/models";
+    import { removeSheet, deleteColsAndRows } from "$lib/index.js";
 
     let { data }: PageProps = $props();
     let file: string = $derived(data.file);
@@ -39,6 +39,11 @@
         sheets = result.sheets;
         selectedSheet = result.sheetName;
     });
+
+    Events.On("setting:deleted:row_col", (e) => {
+        sheets = deleteColsAndRows(sheets, e.data);
+        unselectAll(selectedSheet);
+    })
 
     onDestroy(() => clearCurrentWorkbookId());
 
