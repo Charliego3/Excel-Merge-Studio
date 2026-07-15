@@ -18,6 +18,7 @@ func (s *Setting) SetMain(model utility.Main) {
 		return
 	}
 	utility.State().Main = model
+	utility.State().App.Event.Emit("workbooks:updated")
 }
 
 func (s *Setting) SetHeader(model utility.Setting) {

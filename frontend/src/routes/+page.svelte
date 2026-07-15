@@ -34,12 +34,9 @@
 
     Events.On("workbooks:sheet:removed", (e) => {
         const main: Main = e.data;
-        console.dir({main, sheets})
         const index = sheets.findIndex((sheet) => sheet.Name === main.Sheet);
-        let sheetName = index > 1 ? sheets[index - 1]?.Name : sheets[0]?.Name;
+        selectedSheet = index > 1 ? sheets[index - 1]?.Name : sheets[0]?.Name;
         sheets = sheets.filter((sheet) => sheet.Name !== main.Sheet);
-        console.dir({index, sheets})
-        selectedSheet = sheetName ?? "";
     });
 
     onDestroy(() => clearCurrentWorkbookId());

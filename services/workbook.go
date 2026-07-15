@@ -22,6 +22,7 @@ func (w *Workbook) RemoveSheet(main utility.Main) {
 			return name == main.Sheet
 		})
 		delete(wk.Sheets, main.Sheet)
+		utility.State().App.Event.Emit("workbooks:updated")
 		utility.State().App.Event.Emit("workbooks:sheet:removed", main)
 		fmt.Println("删除Sheet:", main.Workbook, main.Sheet)
 	}
@@ -69,12 +70,15 @@ func (w *Workbook) Workbooks() []*utility.Workbook {
 
 func (w *Workbook) WorkbooksMeta() []utility.WorkbookMeta {
 	var metas []utility.WorkbookMeta
+	main := utility.State().Main
 	for _, wk := range utility.State().Workbooks {
 		metas = append(metas, utility.WorkbookMeta{
 			ID:         wk.ID,
 			FilePath:   wk.FilePath,
 			Name:       wk.Name,
 			SheetNames: wk.SheetNames,
+			IsMain:     wk.ID == main.Workbook,
+			MainSheet:  main.Sheet,
 		})
 	}
 	return metas

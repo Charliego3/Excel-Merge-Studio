@@ -38,6 +38,9 @@ type WorkbookMeta struct {
 	FilePath   string
 	Name       string
 	SheetNames []string
+
+	IsMain    bool
+	MainSheet string
 }
 
 type Workbook struct {

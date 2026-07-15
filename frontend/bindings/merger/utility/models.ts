@@ -64,4 +64,6 @@ export interface WorkbookMeta {
     "FilePath": string;
     "Name": string;
     "SheetNames": string[] | null;
+    "IsMain": boolean;
+    "MainSheet": string;
 }
