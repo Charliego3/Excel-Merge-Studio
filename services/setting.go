@@ -7,6 +7,10 @@ import (
 
 type Setting struct{}
 
+// TODO: 注意
+// 删除行和列的时候要修正合并单元格
+// 删除行时要考虑设置表头之后，如果删除表头上面的行，需要向上移动，如果删除表头下面的行，需要向下移动
+// 删除列时要考虑主键列，同上删除行的表头
 func (s *Setting) DeleteColsAndRows(model utility.Setting) {
 	if len(model.Rows) == 0 && len(model.Cols) == 0 {
 		utility.ShowWarning("先选择需要删除的行或列再操作")
@@ -49,9 +53,9 @@ func (s *Setting) DeleteColsAndRows(model utility.Setting) {
 				}
 			}
 			row.Data = cells
-			row.Columns = len(cells)
-			if row.Columns > colums {
-				colums = row.Columns
+			length := len(cells)
+			if length > colums {
+				colums = length
 			}
 			rows = append(rows, row)
 		}

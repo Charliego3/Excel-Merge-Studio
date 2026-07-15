@@ -63,8 +63,8 @@ type Sheet struct {
 }
 
 type Row struct {
-	Columns int
-	Data    []Cell
+	// Columns int
+	Data []Cell
 }
 
 type Cell struct {
@@ -78,7 +78,7 @@ type Cell struct {
 
 	Skip bool
 
-	Columns  int
+	// Columns  int
 	StartRow int
 	StartCol int
 	EndRow   int

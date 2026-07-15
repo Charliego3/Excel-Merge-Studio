@@ -17,7 +17,6 @@
 
     Events.On("workbook:header:setting", (e) => {
         const data: Setting = e.data;
-        console.dir(sheets)
         sheets = sheets?.map((sheet) =>
             sheet && sheet.Name === data.Sheet
                 ? { ...sheet, Header: data.Rows?.[0] ?? 0 }
@@ -34,7 +33,7 @@
 
     Events.On("setting:deleted:row_col", (e) => {
         sheets = deleteColsAndRows(sheets || [], e.data);
-        unselectAll(selectedSheet);
+        unselectAll(e.data.Sheet);
     })
 </script>
 

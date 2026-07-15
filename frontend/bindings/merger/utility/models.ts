@@ -11,7 +11,10 @@ export interface Cell {
     "ColSpan": number;
     "RowSpan": number;
     "Skip": boolean;
-    "Columns": number;
+
+    /**
+     * Columns  int
+     */
     "StartRow": number;
     "StartCol": number;
     "EndRow": number;
@@ -24,7 +27,9 @@ export interface Main {
 }
 
 export interface Row {
-    "Columns": number;
+    /**
+     * Columns int
+     */
     "Data": Cell[] | null;
 }
 

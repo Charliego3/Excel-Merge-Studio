@@ -66,7 +66,6 @@
                     let currentId = getCurrentWorkbookId();
                     if (!currentId) return;
                     let ids = books?.map(book => book.ID);
-                    // console.dir({current: localStorage.getItem("currentId"), names: ids, id: book?.ID})
                     if (!ids?.includes(currentId)) {
                         goto("/", { invalidateAll: true });
                     } else {

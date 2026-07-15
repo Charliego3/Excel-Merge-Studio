@@ -13,12 +13,12 @@
     import Loading from "$lib/components/Loading.svelte";
     import { Events } from "@wailsio/runtime";
     import { setCurrentWorkbookId, clearCurrentWorkbookId, unselectAll } from "$lib/index.js";
-    import type { Main, Setting, Row } from "../../bindings/merger/utility/models";
+    import type { Main, Setting } from "../../bindings/merger/utility/models";
     import { removeSheet, deleteColsAndRows } from "$lib/index.js";
 
     let { data }: PageProps = $props();
     let file: string = $derived(data.file);
-    let sheets: Sheet[] = $state((() => data.sheets)());
+    let sheets: (Sheet | null)[] = $state((() => data.sheets)());
     let headerHeight: number = $state(0);
     let toolbarHeight: number = $state(0);
     let loading: boolean = $state(false);
@@ -29,8 +29,9 @@
     Events.On("workbook:header:setting", (e) => {
         const data: Setting = e.data;
         sheets = sheets.map((sheet) =>
-            sheet.Name === data.Sheet ? { ...sheet, Header: data.Rows?.[0] ?? 0 } : sheet,
+            sheet?.Name === data.Sheet ? { ...sheet, Header: data.Rows?.[0] ?? 0 } : sheet,
         );
+        unselectAll(data.Sheet, 'rows');
     });
 
     Events.On("workbooks:sheet:removed", (e) => {
@@ -42,7 +43,7 @@
 
     Events.On("setting:deleted:row_col", (e) => {
         sheets = deleteColsAndRows(sheets, e.data);
-        unselectAll(selectedSheet);
+        unselectAll(e.data.Sheet);
     })
 
     onDestroy(() => clearCurrentWorkbookId());
@@ -55,7 +56,7 @@
             selectedSheet = data.sheets[0]?.Name ?? "";
             setCurrentWorkbookId(data.id);
         })
-        .catch((e) => console.log(e))
+        .catch((e) => console.log("选择加载WK", e))
         .finally(() => (loading = false));
     }
 </script>

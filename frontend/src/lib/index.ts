@@ -1,7 +1,7 @@
-import type { Setting } from "../../bindings/merger/utility";
+import type { Setting, Sheet, Row } from "../../bindings/merger/utility";
 
-export function removeSheet(sheets: Sheet[], sheetName: string, selectedSheet: string): {
-    sheets: Sheet[];
+export function removeSheet(sheets: (Sheet | null)[], sheetName: string, selectedSheet: string): {
+    sheets: (Sheet | null)[];
     sheetName: string;
 } {
     const index = sheets?.findIndex((sheet) => sheet?.Name === sheetName) ?? 0;
@@ -34,24 +34,28 @@ export function getCurrentTableSelected(sheet: string): Setting {
     };
 }
 
-export function unselectAll(sheet: string): void {
+export function unselectAll(sheet: string, types: 'cols' | 'rows' | 'all' = 'all'): void {
     let table: HTMLTableElement | null = document.querySelector(`table[data-sheet="${sheet}"]`);
     if (!table) return;
-    table.querySelectorAll('thead tr th input').forEach((el) => {
-        if (el instanceof HTMLInputElement) el.checked = false;
-    });
-    table.querySelectorAll('tbody tr td input').forEach((el) => {
-        if (el instanceof HTMLInputElement) el.checked = false;
-    });
+    if (types === 'all' || types === 'cols') {
+        table.querySelectorAll('thead tr th input').forEach((el) => {
+            if (el instanceof HTMLInputElement) el.checked = false;
+        });
+    }
+    if (types === 'all' || types === 'rows') {
+        table.querySelectorAll('tbody tr td input').forEach((el) => {
+            if (el instanceof HTMLInputElement) el.checked = false;
+        });
+    }
 }
 
-export function deleteColsAndRows(sheets: Sheet[], setting: Setting): Sheet[] {
+export function deleteColsAndRows(sheets: (Sheet | null)[], setting: Setting): (Sheet | null)[] {
     return sheets.map((sheet) => {
-        if (sheet.Name !== setting.Sheet || !sheet.Data) return sheet;
+        if (sheet?.Name !== setting.Sheet || !sheet?.Data) return sheet;
         let maxCellCount = 0;
         let rows = sheet.Data.filter((_, idx) => !setting.Rows?.includes(idx))
             .map((row) => {
-                let cols = row.Data.filter((_, idx) => !setting.Cols?.includes(idx));
+                let cols = row?.Data?.filter((_, idx) => !setting.Cols?.includes(idx)) ?? [];
                 if (cols.length > maxCellCount) maxCellCount = cols.length;
                 return { ...row, Data: cols, Columns: cols.length };
             })
@@ -68,7 +72,7 @@ export function deleteCols(sheets: Sheet[], setting: Setting): Sheet[] {
         for (let i = 0; i < sheet.Data.length; i++) {
             const columns = sheet.Data[i]?.Data ?? [];
             let cols = columns.filter((_, idx) => !setting.Cols?.includes(idx));
-            rows.push({ Columns: cols.length, Data: cols });
+            rows.push({ Data: cols });
             if (maxCellCount < cols.length) maxCellCount = cols.length;
         }
         return { ...sheet, Data: rows, Columns: maxCellCount };

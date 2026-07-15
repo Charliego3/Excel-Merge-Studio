@@ -9,6 +9,12 @@ import { Call as $Call, CancellablePromise as $CancellablePromise } from "@wails
 // @ts-ignore: Unused imports
 import * as utility$0 from "../utility/models.js";
 
+/**
+ * TODO: 注意
+ * 删除行和列的时候要修正合并单元格
+ * 删除行时要考虑设置表头之后，如果删除表头上面的行，需要向上移动，如果删除表头下面的行，需要向下移动
+ * 删除列时要考虑主键列，同上删除行的表头
+ */
 export function DeleteColsAndRows(model: utility$0.Setting): $CancellablePromise<void> {
     return $Call.ByID(1583274716, model);
 }

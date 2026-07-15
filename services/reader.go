@@ -79,75 +79,101 @@ func (r *Reader) read(id, file string) []*utility.Sheet {
 			}
 
 			row := &utility.Row{}
-			var colStart int
-			for index, _ := range columns {
-				var cell utility.Cell
-				col := index + 1
+			// var colStart int
+			for col := 1; col <= len(columns); {
 				merge, ok := r.merged(col, rowIdx)
 				if ok {
-					cell.Value = merge.Value
+					cell := newCell(merge)
 					cell.IsMerged = true
 					cell.Skip = !r.isMergeFirstCell(col, rowIdx)
-					cell.ColSpan = merge.ColSpan
-					cell.RowSpan = merge.RowSpan
-					cell.StartCol = merge.startCol
-					cell.EndCol = merge.endCol
-					cell.StartRow = merge.startRow
-					cell.EndRow = merge.endRow
-					colStart += cell.ColSpan
-					// if !cell.Skip {
-					// 	row.Columns += cell.ColSpan
-					// }
+					row.Data = append(row.Data, cell)
+
+					for i := 1; i < cell.ColSpan; i++ {
+						cell := newCell(merge)
+						cell.IsMerged = true
+						cell.Skip = true
+						row.Data = append(row.Data, cell)
+					}
+					col += cell.ColSpan
 				} else {
+					var cell utility.Cell
 					cellName, _ := excelize.CoordinatesToCellName(col, rowIdx)
-					cell.Value, _ = r.file.CalcCellValue(sheetName, cellName)
-					cell.ColSpan = 1
-					cell.RowSpan = 1
-					colStart++
-					cell.StartCol = colStart
+					value, _ := r.file.CalcCellValue(sheetName, cellName)
+					cell.Value = strings.TrimSpace(value)
+					cell.StartCol = col
 					cell.StartRow = rowIdx
-					row.Columns += 1
+					row.Data = append(row.Data, cell)
+					col++
 				}
-
-				// if cell.Skip {
-				// 	continue
-				// }
-
-				cell.Value = strings.TrimSpace(cell.Value)
-				row.Data = append(row.Data, cell)
 			}
+
+			// for index, _ := range columns {
+			// 	var cell utility.Cell
+			// 	col := index + 1
+			// 	merge, ok := r.merged(col, rowIdx)
+			// 	if ok {
+			// 		cell.Value = merge.Value
+			// 		cell.IsMerged = true
+			// 		cell.Skip = !r.isMergeFirstCell(col, rowIdx)
+			// 		cell.ColSpan = merge.ColSpan
+			// 		cell.RowSpan = merge.RowSpan
+			// 		cell.StartCol = merge.startCol
+			// 		cell.EndCol = merge.endCol
+			// 		cell.StartRow = merge.startRow
+			// 		cell.EndRow = merge.endRow
+			// 		colStart += cell.ColSpan
+			// 	} else {
+			// 		cellName, _ := excelize.CoordinatesToCellName(col, rowIdx)
+			// 		cell.Value, _ = r.file.CalcCellValue(sheetName, cellName)
+			// 		colStart++
+			// 		cell.StartCol = colStart
+			// 		cell.StartRow = rowIdx
+			// 		row.Columns += 1
+			// 	}
+
+			// 	cell.Value = strings.TrimSpace(cell.Value)
+			// 	row.Data = append(row.Data, cell)
+			// }
 			rowIdx++
 			r.sheet.Data = append(r.sheet.Data, row)
 		}
 
-		for rowIdx, row := range r.sheet.Data {
-			if row.Columns < r.sheet.Columns {
-				for col := 0; col < r.sheet.Columns; {
-					axis, _ := excelize.CoordinatesToCellName(col+1, rowIdx+1)
-					if merge, ok := r.merges.cells[axis]; ok {
-						row.Columns += merge.ColSpan
-						col += merge.ColSpan
-					} else {
-						col++
-					}
-				}
-			}
-
-			if row.Columns < r.sheet.Columns {
-				for i := 0; i < r.sheet.Columns-row.Columns; i++ {
-					row.Data = append(row.Data, utility.Cell{ColSpan: 1, RowSpan: 1})
-				}
-			}
-		}
-
+		var truncated bool
 	ROW:
 		for i := len(r.sheet.Data) - 1; i >= 0; i-- {
-			for _, row := range r.sheet.Data[i].Data {
-				if row.Value != "" {
-					break ROW
+			length := len(r.sheet.Data[i].Data)
+			if r.sheet.Columns > length {
+				for j := length + 1; j <= r.sheet.Columns; j++ {
+					var value string
+					merge, skip := r.merged(j, i+1)
+					if skip {
+						axis, _ := excelize.CoordinatesToCellName(merge.startCol, merge.startRow)
+						if m, ok := r.merges.starts[axis]; ok {
+							value = m.Value
+						}
+					}
+					r.sheet.Data[i].Data = append(r.sheet.Data[i].Data, utility.Cell{
+						Value:    value,
+						Skip:     skip,
+						StartRow: i + 1,
+						EndRow:   i + 1,
+						StartCol: j,
+						EndCol:   j,
+						ColSpan:  1,
+						RowSpan:  1,
+					})
 				}
 			}
-			r.sheet.Data = r.sheet.Data[:i]
+
+			if !truncated {
+				for _, row := range r.sheet.Data[i].Data {
+					if row.Value != "" {
+						truncated = true
+						continue ROW
+					}
+				}
+				r.sheet.Data = r.sheet.Data[:i]
+			}
 		}
 
 		r.sheet.Rows = len(r.sheet.Data)
@@ -297,6 +323,18 @@ func (r *Reader) ShowFilePicker() map[string]any {
 		"file":   path,
 		"sheets": r.read(id, path),
 	}
+}
+
+func newCell(merge *MergeInfo) utility.Cell {
+	var cell utility.Cell
+	cell.Value = strings.TrimSpace(merge.Value)
+	cell.ColSpan = merge.ColSpan
+	cell.RowSpan = merge.RowSpan
+	cell.StartCol = merge.startCol
+	cell.EndCol = merge.endCol
+	cell.StartRow = merge.startRow
+	cell.EndRow = merge.endRow
+	return cell
 }
 
 type MergeInfo struct {
