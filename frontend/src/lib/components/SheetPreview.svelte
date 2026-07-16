@@ -83,7 +83,7 @@
                             </div>
                         </td>
                         {#each row?.Data as cell}
-                            {#if !cell.Skip}
+                            {#if cell && !cell.Skip}
                                 <td data-header={sheet?.Header === rowIndex}
                                     title={`${cell.IsMerged ? index2column(cell.StartCol - 1) + (cell.StartRow) + ":" + index2column(cell.EndCol - 1) + (cell.EndRow) : index2column(cell.StartCol - 1) + cell.StartRow}`}
                                     colspan={cell.IsMerged ? cell.ColSpan : 1}
