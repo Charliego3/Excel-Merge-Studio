@@ -1,8 +1,11 @@
 package services
 
 import (
+	"math"
 	"merger/utility"
 	"slices"
+
+	"github.com/xuri/excelize/v2"
 )
 
 type Setting struct{}
@@ -18,10 +21,7 @@ func (s *Setting) Result(setting utility.Setting, sheet *utility.Sheet) utility.
 	}
 }
 
-// TODO: 注意
 // 删除行和列的时候要修正合并单元格
-// 删除行时要考虑设置表头之后，如果删除表头上面的行，需要向上移动，如果删除表头下面的行，需要向下移动
-// 删除列时要考虑主键列，同上删除行的表头
 func (s *Setting) DeleteColsAndRows(model utility.Setting) {
 	if len(model.Rows) == 0 && len(model.Cols) == 0 {
 		utility.ShowWarning("先选择需要删除的行或列再操作")
@@ -48,18 +48,62 @@ func (s *Setting) DeleteColsAndRows(model utility.Setting) {
 			return
 		}
 
+		merger := utility.NewMerger(sheet.WorkbookId, sheet.Name)
+		sheetMergeCells := merger.SheetMergeCells()
+
+		deleteRowsFn := func(merge utility.MergeInfo) {
+			// 说明是列合并，不需要调整
+			if merge.StartRow == merge.EndRow {
+				return
+			}
+
+			for row_idx := range model.Rows {
+				// 删除合并单元格的首行，需要调整下一行为合并单元格的首行
+				if row_idx == merge.StartRow-1 {
+					cell := sheet.Data[row_idx+1].Data[merge.StartCol-1]
+					cell.Skip = false
+					cell.RowSpan -= 1
+				} else { // 删除的不是合并首行，需要调整合并首行的 RowSpan
+					c, r, _ := excelize.CellNameToCoordinates(merge.Start)
+					cell := sheet.Data[r-1].Data[c-1]
+					cell.RowSpan -= 1
+				}
+			}
+		}
+
+		deleteColsFn := func(merge utility.MergeInfo) {
+			if merge.StartCol == merge.EndCol {
+				return
+			}
+
+			for col_idx := range model.Cols {
+				if col_idx == merge.StartCol {
+
+				}
+			}
+		}
+
+		for _, merge := range sheetMergeCells.Cells {
+			deleteRowsFn(merge)
+			deleteColsFn(merge)
+		}
+
 		var colums int
 		var rows []*utility.Row
-		for idx, row := range sheet.Data {
-			if slices.Contains(model.Rows, idx) {
+		for row_idx, row := range sheet.Data {
+			if slices.Contains(model.Rows, row_idx) {
+				if sheet.Header >= row_idx {
+					// 如果删除表头上面的行，需要向上移动
+					sheet.Header = int(math.Max(float64(sheet.Header-1), 0))
+				}
 				continue
 			}
 
 			var cells []*utility.Cell
-			for col, cell := range row.Data {
-				if !slices.Contains(model.Cols, col) {
+			for col_idx, cell := range row.Data {
+				if !slices.Contains(model.Cols, col_idx) {
 					cells = append(cells, cell)
-				} else if sheet.PrimaryKey == col {
+				} else if sheet.PrimaryKey == col_idx {
 					// 清除主键的位置
 					sheet.PrimaryKey = -1
 				} else { // 跳过被删除的列：处理删除列时的合并单元格

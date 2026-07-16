@@ -21,6 +21,10 @@ export function ContainsWorkbook(id: string): $CancellablePromise<boolean> {
     return $Call.ByID(316202949, id);
 }
 
+export function GetSheet(main: utility$0.Main): $CancellablePromise<utility$0.Sheet> {
+    return $Call.ByID(2882892507, main);
+}
+
 export function GetWorkbook(id: string): $CancellablePromise<utility$0.WorkbookInfo> {
     return $Call.ByID(338056824, id);
 }

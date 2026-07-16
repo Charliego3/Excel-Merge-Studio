@@ -199,7 +199,7 @@ thead tr th:first-child {
 
 thead tr th {
     background-color: ghostwhite;
-    padding: 0.3rem 1rem;
+    padding: 0.3rem 0.5rem;
     font-size: 12px;
     border-right-width: 1px;
     white-space: nowrap;

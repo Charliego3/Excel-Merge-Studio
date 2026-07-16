@@ -63,9 +63,9 @@
                         <th>
                             <div class="flex gap-2 items-center justify-center">
                                 {#if checked}
-                                    <input type="checkbox" class="thead-col rounded border-input -mt-0.5"/>
+                                    <input id={`col-${index}`} type="checkbox" class="thead-col rounded border-input -mt-0.5"/>
                                 {/if}
-                                <Label for={`col-${index}`} class="font-bold text-[12px]">{index2column(index)}: {index + 1}</Label>
+                                <Label for={`col-${index}`} class="font-bold text-[12px]">{index2column(index)}:{index + 1}</Label>
                             </div>
                         </th>
                     {/each}
@@ -75,7 +75,7 @@
                 {#each sheet?.Data as row, rowIndex}
                     <tr data-header={sheet?.Header === rowIndex}>
                         <td data-header={sheet?.Header === rowIndex}>
-                            <div class="flex gap-2 items-center justify-center">
+                            <div class="flex gap-2 items-center">
                                 {#if checked}
                                     <input id={`row-${rowIndex}`} type="checkbox" class="rounded border-input -mt-0.5"/>
                                 {/if}

@@ -1,11 +1,11 @@
 <script lang="ts">
     import WorkbookPreview from "$lib/components/WorkbookPreview.svelte";
     import type { PageProps } from "./$types";
-    import { GetWorkbook } from "../../../bindings/merger/services/workbook";
+    import { GetWorkbook, GetSheet } from "../../../bindings/merger/services/workbook";
     import SettingAction from "$lib/components/SettingAction.svelte";
     import { Events } from "@wailsio/runtime";
     import type { Setting, Main } from "../../../bindings/merger/utility/models";
-    import { removeSheet, deleteColsAndRows, unselectAll } from "$lib/index";
+    import { removeSheet, unselectAll } from "$lib/index";
 
     let { data }: PageProps = $props();
     let headerHeight = $state(0);
@@ -31,8 +31,12 @@
         selectedSheet = result.sheetName;
     });
 
-    Events.On("setting:deleted:row_col", (e) => {
-        sheets = deleteColsAndRows(sheets || [], e.data);
+    Events.On("setting:deleted:row_col", async (e) => {
+        // sheets = deleteColsAndRows(sheets || [], e.data);
+        const updatedSheet = await GetSheet({ Workbook: e.data.Workbook, Sheet: e.data.Sheet });
+        sheets = sheets?.map((sheet) =>
+            sheet?.Name === e.data.Sheet ? updatedSheet : sheet,
+        ) ?? [];
         unselectAll(e.data.Sheet);
     })
 </script>

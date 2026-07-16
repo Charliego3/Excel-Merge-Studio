@@ -8,6 +8,15 @@ import (
 
 type Workbook struct{}
 
+func (w *Workbook) GetSheet(main utility.Main) utility.Sheet {
+	if wb, ok := utility.State.Workbooks[main.Workbook]; ok {
+		if sheet, ok := wb.Sheets[main.Sheet]; ok {
+			return *sheet
+		}
+	}
+	return utility.Sheet{}
+}
+
 func (w *Workbook) RemoveSheet(main utility.Main) {
 	if wb, ok := utility.State.Workbooks[main.Workbook]; ok {
 		if len(wb.Sheets) < 2 {

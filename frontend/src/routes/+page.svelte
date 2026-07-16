@@ -14,8 +14,8 @@
     import { Events } from "@wailsio/runtime";
     import { setCurrentWorkbookId, clearCurrentWorkbookId, unselectAll } from "$lib/index.js";
     import type { Main, Setting } from "../../bindings/merger/utility/models";
-    import { removeSheet, deleteColsAndRows } from "$lib/index.js";
-    import { GetWorkbook } from "../../bindings/merger/services/workbook";
+    import { removeSheet } from "$lib/index.js";
+    import { GetSheet } from "../../bindings/merger/services/workbook";
 
     let { data }: PageProps = $props();
     let file: string = $derived(data.file);
@@ -43,7 +43,11 @@
     });
 
     Events.On("setting:deleted:row_col", async (e) => {
-        sheets = (await GetWorkbook(workbookId)).Sheets ?? [];// deleteColsAndRows(sheets, e.data);
+        // sheets = deleteColsAndRows(sheets, e.data);
+        const updated = await GetSheet({Workbook: e.data.Workbook, Sheet: e.data.Sheet});
+        sheets = sheets.map((sheet) =>
+            sheet?.Name === e.data.Sheet ? updated : sheet,
+        );
         unselectAll(e.data.Sheet);
     })
 

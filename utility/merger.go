@@ -14,6 +14,15 @@ func NewMerger(workbookId, sheet string) *Merger {
 	}
 }
 
+func (m *Merger) SheetMergeCells() SheetMergeCells {
+	if wbMerges, ok := State.MergeCells[m.WorkbookId]; ok {
+		if sheetMerges, ok := wbMerges[m.Sheet]; ok {
+			return sheetMerges
+		}
+	}
+	return SheetMergeCells{}
+}
+
 func (m *Merger) DeleteSheetMergeCells() {
 	if wbMerges, ok := State.MergeCells[m.WorkbookId]; ok {
 		delete(wbMerges, m.Sheet)
