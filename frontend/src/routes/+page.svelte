@@ -110,7 +110,7 @@
                 <Empty.Media variant="icon">
                     <SheetIcon size={30} color="#127A65" />
                 </Empty.Media>
-                <Empty.Title>选择文件</Empty.Title>
+                <Empty.Title>读取文件</Empty.Title>
                 <Empty.Description class="text-[12px]/6">
                     请选择一个表格文件进行打开和查看。支持的文件格式：
                     <Kbd.Group>
@@ -122,7 +122,7 @@
                 </Empty.Description>
             </Empty.Header>
             <Empty.Content>
-                <Button onclick={onWorkbookLoaded}>选择文件</Button>
+                <Button onclick={onWorkbookLoaded} variant="outline">选择文件</Button>
             </Empty.Content>
         </Empty.Root>
     {/if}
