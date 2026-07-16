@@ -6,29 +6,28 @@ import (
 )
 
 func NewDialog(options application.WebviewWindowOptions) *application.WebviewWindow {
-	state := State()
-	dialog := state.App.Window.NewWithOptions(options)
-	state.MainWindow.AttachModal(dialog)
-	state.MainWindow.SetEnabled(false)
+	dialog := State.App.Window.NewWithOptions(options)
+	State.MainWindow.AttachModal(dialog)
+	State.MainWindow.SetEnabled(false)
 	dialog.RegisterHook(events.Common.WindowClosing, func(e *application.WindowEvent) {
-		state.MainWindow.SetEnabled(true)
-		state.MainWindow.Focus()
+		State.MainWindow.SetEnabled(true)
+		State.MainWindow.Focus()
 	})
 	return dialog
 }
 
 func ShowWarning(message string) {
-	State().App.Dialog.Warning().
-		AttachToWindow(State().MainWindow).
+	State.App.Dialog.Warning().
+		AttachToWindow(State.MainWindow).
 		SetTitle("🚧 提醒").
 		SetMessage(message).
 		Show()
 }
 
 func Confirm(title, message string, callback func(bool)) {
-	dialog := State().App.Dialog.Question().
+	dialog := State.App.Dialog.Question().
 		SetTitle(title).
-		AttachToWindow(State().MainWindow).
+		AttachToWindow(State.MainWindow).
 		SetMessage(message)
 
 	cancelBtn := dialog.AddButton("取消")

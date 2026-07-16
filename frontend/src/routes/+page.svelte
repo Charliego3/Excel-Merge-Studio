@@ -15,6 +15,7 @@
     import { setCurrentWorkbookId, clearCurrentWorkbookId, unselectAll } from "$lib/index.js";
     import type { Main, Setting } from "../../bindings/merger/utility/models";
     import { removeSheet, deleteColsAndRows } from "$lib/index.js";
+    import { GetWorkbook } from "../../bindings/merger/services/workbook";
 
     let { data }: PageProps = $props();
     let file: string = $derived(data.file);
@@ -41,8 +42,8 @@
         selectedSheet = result.sheetName;
     });
 
-    Events.On("setting:deleted:row_col", (e) => {
-        sheets = deleteColsAndRows(sheets, e.data);
+    Events.On("setting:deleted:row_col", async (e) => {
+        sheets = (await GetWorkbook(workbookId)).Sheets ?? [];// deleteColsAndRows(sheets, e.data);
         unselectAll(e.data.Sheet);
     })
 

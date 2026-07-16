@@ -15,8 +15,7 @@ import (
 var assets embed.FS
 
 func main() {
-	state := utility.State()
-	state.App = application.New(application.Options{
+	utility.State.App = application.New(application.Options{
 		Name:        "Excel Merge Studio",
 		Description: "Merge Excel Workbooks by a selected key column.",
 		Assets: application.AssetOptions{
@@ -32,12 +31,12 @@ func main() {
 		},
 		OnShutdown: func() {
 			/// Store window bounds before shutdown
-			var bounds = state.MainWindow.Bounds()
+			var bounds = utility.State.MainWindow.Bounds()
 			fmt.Printf("%+v\n", bounds)
 		},
 	})
 
-	state.MainWindow = state.App.Window.NewWithOptions(application.WebviewWindowOptions{
+	utility.State.MainWindow = utility.State.App.Window.NewWithOptions(application.WebviewWindowOptions{
 		Title: "Excel Merge Studio",
 		URL:   "/",
 
@@ -56,7 +55,7 @@ func main() {
 		},
 	})
 
-	if err := state.App.Run(); err != nil {
+	if err := utility.State.App.Run(); err != nil {
 		log.Fatal(err)
 	}
 }

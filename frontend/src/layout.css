@@ -241,7 +241,7 @@ tbody tr[data-header="true"] {
     font-size: 12px;
     font-weight: bold;
     position: sticky;
-    top: 1.625rem;
+    top: 1.7rem;
 }
 
 tbody tr td[data-header="true"] {
@@ -256,7 +256,7 @@ tbody tr td[data-header="true"]:last-child {
 
 tbody tr td[data-header="true"]:first-child {
     position: sticky;
-    top: 1.625rem;
+    top: 1.7rem;
     left: 0;
     z-index: 20000000;
 }

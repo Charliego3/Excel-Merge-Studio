@@ -30,7 +30,7 @@ export interface Row {
     /**
      * Columns int
      */
-    "Data": Cell[] | null;
+    "Data": (Cell | null)[] | null;
 }
 
 export interface Setting {
@@ -40,6 +40,15 @@ export interface Setting {
     "Rows": number[] | null;
 }
 
+export interface SettingWithHeader {
+    "Workbook": string;
+    "Sheet": string;
+    "Cols": number[] | null;
+    "Rows": number[] | null;
+    "Header": number;
+    "PrimaryKey": number;
+}
+
 export interface Sheet {
     "WorkbookId": string;
     "Name": string;
@@ -47,6 +56,7 @@ export interface Sheet {
     "Rows": number;
     "Data": (Row | null)[] | null;
     "Header": number;
+    "PrimaryKey": number;
 }
 
 export interface Workbook {

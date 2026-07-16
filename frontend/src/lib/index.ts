@@ -1,4 +1,4 @@
-import type { Setting, Sheet, Row } from "../../bindings/merger/utility";
+import type { Setting, SettingWithHeader, Sheet, Row } from "../../bindings/merger/utility";
 
 export function removeSheet(sheets: (Sheet | null)[], sheetName: string, selectedSheet: string): {
     sheets: (Sheet | null)[];
@@ -49,7 +49,7 @@ export function unselectAll(sheet: string, types: 'cols' | 'rows' | 'all' = 'all
     }
 }
 
-export function deleteColsAndRows(sheets: (Sheet | null)[], setting: Setting): (Sheet | null)[] {
+export function deleteColsAndRows(sheets: (Sheet | null)[], setting: SettingWithHeader): (Sheet | null)[] {
     return sheets.map((sheet) => {
         if (sheet?.Name !== setting.Sheet || !sheet?.Data) return sheet;
         let maxCellCount = 0;
@@ -60,7 +60,7 @@ export function deleteColsAndRows(sheets: (Sheet | null)[], setting: Setting): (
                 return { ...row, Data: cols, Columns: cols.length };
             })
             .filter((row) => row.Columns > 0);
-        return { ...sheet, Data: rows, Columns: maxCellCount };
+        return { ...sheet, Header: setting.Header, PrimaryKey: setting.PrimaryKey, Data: rows, Columns: maxCellCount };
     });
 }
 

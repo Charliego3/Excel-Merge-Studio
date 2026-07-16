@@ -6,6 +6,7 @@ export type {
     Main,
     Row,
     Setting,
+    SettingWithHeader,
     Sheet,
     Workbook,
     WorkbookInfo,

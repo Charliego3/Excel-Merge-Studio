@@ -27,7 +27,7 @@
     }
 </script>
 
-<div class="text-gray-500 flex justify-center gap-2">
+<div class="text-gray-500 flex justify-start items-center gap-2">
     <Button title={description} onclick={setMain} size="xs" variant="outline">设为主表 (Sheet)</Button>
     <Button onclick={setHeader} size="xs" variant="outline" title="表头只能选择一行">设为表头</Button>
     <Button onclick={setHeader} size="xs" variant="outline" title="主键列只能选择一列">设为主键列</Button>

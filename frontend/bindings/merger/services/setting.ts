@@ -23,6 +23,10 @@ export function GetMain(): $CancellablePromise<utility$0.Main> {
     return $Call.ByID(2940593569);
 }
 
+export function Result(setting: utility$0.Setting, sheet: utility$0.Sheet | null): $CancellablePromise<utility$0.SettingWithHeader> {
+    return $Call.ByID(3885167777, setting, sheet);
+}
+
 export function SetHeader(model: utility$0.Setting): $CancellablePromise<void> {
     return $Call.ByID(1241738557, model);
 }
