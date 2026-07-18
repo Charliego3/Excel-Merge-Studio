@@ -4,10 +4,12 @@
 export type {
     Cell,
     Main,
+    MergeInfo,
     Row,
     Setting,
     SettingWithHeader,
     Sheet,
+    SheetMergeCells,
     Workbook,
     WorkbookInfo,
     WorkbookMeta

@@ -26,6 +26,18 @@ export interface Main {
     "Sheet": string;
 }
 
+export interface MergeInfo {
+    "Start": string;
+    "End": string;
+    "RowSpan": number;
+    "ColSpan": number;
+    "StartRow": number;
+    "StartCol": number;
+    "EndRow": number;
+    "EndCol": number;
+    "Value": string;
+}
+
 export interface Row {
     /**
      * Columns int
@@ -59,12 +71,29 @@ export interface Sheet {
     "PrimaryKey": number;
 }
 
+export interface SheetMergeCells {
+    /**
+     * 所有属于合并区域的单元格
+     */
+    "Cells": { [_ in string]?: MergeInfo } | null;
+
+    /**
+     * 合并区域左上角
+     */
+    "Starts": { [_ in string]?: MergeInfo } | null;
+}
+
 export interface Workbook {
     "ID": string;
     "FilePath": string;
     "Name": string;
     "SheetNames": string[] | null;
     "Sheets": { [_ in string]?: Sheet | null } | null;
+
+    /**
+     * {Sheet:SheetMergeCells}
+     */
+    "MergeCells": { [_ in string]?: SheetMergeCells } | null;
 }
 
 export interface WorkbookInfo {

@@ -5,6 +5,7 @@ import (
 	"merger/utility"
 	"path/filepath"
 	"runtime/debug"
+	"slices"
 	"strings"
 
 	"github.com/xuri/excelize/v2"
@@ -107,9 +108,8 @@ func (r *Reader) read(id, file string) []*utility.Sheet {
 		}
 
 		var truncated bool
-	ROW:
-		for row_idx := len(r.sheet.Data) - 1; row_idx >= 0; row_idx-- {
-			length := len(r.sheet.Data[row_idx].Data)
+		slices.Backward(r.sheet.Data)(func(row_idx int, row *utility.Row) bool {
+			length := len(row.Data)
 			if r.sheet.Columns > length {
 				for col_idx := length + 1; col_idx <= r.sheet.Columns; col_idx++ {
 					var value string
@@ -119,7 +119,7 @@ func (r *Reader) read(id, file string) []*utility.Sheet {
 							value = m.Value
 						}
 					}
-					r.sheet.Data[row_idx].Data = append(r.sheet.Data[row_idx].Data, &utility.Cell{
+					row.Data = append(row.Data, &utility.Cell{
 						Value:    value,
 						Skip:     skip,
 						StartRow: row_idx + 1,
@@ -133,15 +133,16 @@ func (r *Reader) read(id, file string) []*utility.Sheet {
 			}
 
 			if !truncated {
-				for _, row := range r.sheet.Data[row_idx].Data {
+				for _, row := range row.Data {
 					if row.Value != "" {
 						truncated = true
-						continue ROW
+						return true
 					}
 				}
 				r.sheet.Data = r.sheet.Data[:row_idx]
 			}
-		}
+			return true
+		})
 
 		r.sheet.Rows = len(r.sheet.Data)
 		err = rows.Close()

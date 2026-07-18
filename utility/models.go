@@ -65,6 +65,7 @@ type Workbook struct {
 	Name       string
 	SheetNames []string
 	Sheets     map[string]*Sheet
+	MergeCells map[string]SheetMergeCells // {Sheet:SheetMergeCells}
 }
 
 type Sheet struct {
